@@ -1,0 +1,18 @@
+# Obsidian workspace files
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.log
+~$*
+
+# Windows
+ehthumbs.db
+ehthumbs_vista.db

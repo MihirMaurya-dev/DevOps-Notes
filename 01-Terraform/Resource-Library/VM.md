@@ -1,0 +1,167 @@
+---
+tags: [terraform, azure, compute, azurerm_linux_virtual_machine]
+source: devopsinsiders/batch-18
+created: 2026-06-08
+level: beginner
+---
+
+# 💻 Terraform Resource: azurerm_linux_virtual_machine
+
+> "A Virtual Machine is just a computer sitting in Microsoft's warehouse that you are renting by the minute. It needs a hard drive and a network cable before it can do anything useful."
+
+---
+
+## 📖 Before You Read
+
+Before diving into this Terraform resource, make sure you understand:
+- What a **Virtual Machine** is in Azure — see [[Azure-Fundamentals]]
+- What a **VNet** and **Subnet** are (the network your VM plugs into) — see [[VNet]] and [[Subnet]]
+- The concept of **SSH Keys** for logging into servers — see [[05-Linux/SSH-Basics]]
+
+---
+
+## 1. 🤔 What is `azurerm_linux_virtual_machine`?
+
+### 🤔 What is it?
+
+An **Azure Virtual Machine (VM)** is an on-demand, scalable computer running in the cloud. You choose the CPU power, the memory, and the Operating System (like Linux Ubuntu or Windows), and Microsoft boots it up for you.
+
+In Terraform, `azurerm_linux_virtual_machine` is the resource block used to create a Linux-based server. (There is a separate resource `azurerm_windows_virtual_machine` for Windows servers).
+
+> 🖥️ **Real-World Analogy:**
+> Imagine buying a custom-built desktop PC. You have to pick out the **Motherboard/CPU** (the `size` of the VM), the **Hard Drive** (the `os_disk`), and the **Operating System** you want installed (the `source_image_reference`).
+> 
+> However, a computer is useless if it's not plugged into the internet! You also need to buy an Ethernet Card (the **Network Interface Card** or NIC) and plug a cable into your router (the **Subnet**).
+
+---
+
+## 2. 🧠 Why do we need it?
+
+While modern cloud development often uses Containers or Serverless functions, Virtual Machines are the absolute core building blocks of the cloud. They give you 100% full control over the operating system. 
+
+Why use Terraform to deploy VMs?
+1. **Consistency:** If you click through the portal to create a VM, you might forget to check a security box. With Terraform, the configuration is identical every single time.
+2. **Speed:** You can deploy 100 identical web servers in 2 minutes using a Terraform loop.
+3. **Automated Bootstrapping:** You can use the `custom_data` block in Terraform to tell the VM to automatically install software (like Nginx or Docker) the moment it turns on!
+
+---
+
+## 3. ⚙️ How does it work?
+
+A major trap for beginners is thinking that a VM is just one single resource. 
+In Azure (and Terraform), a VM is actually **decoupled** into several pieces:
+
+1. **The Compute Instance:** The CPU and RAM (`azurerm_linux_virtual_machine`).
+2. **The Hard Drive:** Where the OS is installed (automatically managed via the `os_disk` block).
+3. **The Network Interface Card (NIC):** The virtual ethernet adapter (`azurerm_network_interface`). 
+
+> ⚠️ **CRITICAL:** A VM cannot exist without a NIC. You MUST create the NIC first in Terraform, attach it to a Subnet, and then attach the NIC to the VM.
+
+---
+
+## 4. 💡 Real Example (Line-by-Line)
+
+Here is a secure, production-ready example of deploying a Linux VM. Notice how we must create the NIC first!
+
+```hcl
+# =======================================================
+# STEP 1: Create the Network Interface Card (NIC)
+# =======================================================
+resource "azurerm_network_interface" "app_nic" {
+  name                = "nic-web-prod-001"
+  location            = "eastus"
+  resource_group_name = "rg-myapp-prod"
+
+  ip_configuration {
+    name                          = "internal"
+    
+    # Plug the NIC into a specific subnet!
+    subnet_id                     = azurerm_subnet.web_tier.id
+    
+    # "Dynamic" means Azure picks the next available IP in the subnet automatically
+    private_ip_address_allocation = "Dynamic"
+    
+    # 🛡️ SECURITY BEST PRACTICE: Notice there is NO public IP address here!
+    # Servers should never be directly accessible from the public internet.
+  }
+}
+
+# =======================================================
+# STEP 2: Create the Virtual Machine
+# =======================================================
+resource "azurerm_linux_virtual_machine" "app_vm" {
+  name                = "vm-web-prod-001"
+  resource_group_name = "rg-myapp-prod"
+  location            = "eastus"
+  
+  # Pick the computer specs (B2s = 2 CPUs, 4GB RAM - good for testing)
+  size                = "Standard_B2s"
+  
+  # The default administrator username
+  admin_username      = "azureuser"
+
+  # 🔌 Plug the NIC we created above into this computer
+  network_interface_ids = [
+    azurerm_network_interface.app_nic.id
+  ]
+
+  # 🔑 Provide the public SSH key so we can log in securely
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file("~/.ssh/id_rsa.pub") # Reads the key from your local machine
+  }
+
+  # 💾 Configure the Hard Drive
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "StandardSSD_LRS" # Standard SSD (cheaper than Premium)
+  }
+
+  # 💿 What Operating System to install?
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"  # Ubuntu 22.04 Long Term Support
+    version   = "latest"
+  }
+
+  # 🚀 Custom Data: A script that runs exactly ONCE when the VM boots up for the first time
+  # base64encode is required because Azure expects the script in base64 format
+  custom_data = base64encode(<<-EOF
+    #!/bin/bash
+    # Update the package manager and install the Nginx web server automatically!
+    sudo apt-get update -y
+    sudo apt-get install nginx -y
+    sudo systemctl start nginx
+    sudo systemctl enable nginx
+  EOF
+  )
+}
+```
+
+---
+
+## 5. ⚠️ Common Mistakes Beginners Make
+
+1. **Passwords in Code:** Never use the `admin_password` argument and hardcode a password in your `main.tf` file. Always use `admin_ssh_key` for Linux VMs. Hardcoded passwords are the fastest way to get hacked.
+2. **Assigning Public IPs:** Beginners often attach a `public_ip_address_id` to their NIC so they can easily connect from home. **This is a massive security risk.** Always use private IPs and connect via **Azure Bastion** or a corporate VPN.
+3. **Secrets in Custom Data:** The `custom_data` script is visible in plaintext inside your `terraform.tfstate` file! Do not put database passwords or API keys inside your bash script. Use Azure Key Vault to fetch secrets dynamically at runtime.
+
+---
+
+## 6. 🎯 Key Takeaway
+
+Deploying a Virtual Machine in Terraform requires two distinct resources: the Network Interface (`azurerm_network_interface`) and the Compute Box (`azurerm_linux_virtual_machine`). Always use SSH keys, avoid Public IPs to maintain a Zero-Trust security posture, and leverage `custom_data` to automate software installation.
+
+---
+
+## 7. ❓ Beginner FAQ
+
+**Q1: How do I know what to type for `publisher`, `offer`, and `sku`?**
+> Microsoft publishes a list of available images. The easiest way to find them is to use the Azure CLI command: `az vm image list --output table`. This will show you the exact strings to use for Ubuntu, RedHat, Debian, etc.
+
+**Q2: What happens if I change the `size` of the VM in Terraform later?**
+> If you change `Standard_B2s` to `Standard_D4s_v3` and run `terraform apply`, Azure will shut down the VM, move your hard drive to a faster physical server, and reboot it. Your data is safe, but there will be a few minutes of downtime!
+
+**Q3: Can I attach multiple hard drives to one VM?**
+> Yes! The VM automatically comes with an `os_disk` (where the C: drive or `/` root is installed). If you need an extra drive for a database, you create a separate `azurerm_managed_disk` resource and attach it using `azurerm_virtual_machine_data_disk_attachment`.

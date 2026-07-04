@@ -1,0 +1,10 @@
+{
+  "cssTheme": "AnuPpuccin",
+  "showRibbon": true,
+  "theme": "system",
+  "accentColor": "",
+  "enabledCssSnippets": [
+    "theme"
+  ],
+  "nativeMenus": false
+}
