@@ -1,6 +1,18 @@
-# 🚀 DevOps Knowledge Base — DevOps Insiders Batch 18
+<div align="center">
 
-> **A production-grade Obsidian vault for mastering Azure, Terraform, CI/CD, Linux, and Enterprise Architecture** — built for real-world DevOps engineering roles and Azure certification interviews.
+# 🚀 DevOps Knowledge Base
+### DevOps Insiders Batch 18
+
+![Views](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FMihirMaurya-dev%2FDevOps-Notes&count_bg=%23007EC6&title_bg=%23555555&title=Views&edge_flat=true)
+![Platform](https://img.shields.io/badge/Platform-Azure-0089D6?logo=microsoft-azure&logoColor=white)
+![IaC](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-Azure_DevOps-0078D7?logo=azure-devops&logoColor=white)
+![Obsidian Vault](https://img.shields.io/badge/Obsidian-Vault-7c3aed?logo=obsidian&logoColor=white)
+
+> **A production-grade Obsidian vault for mastering Azure, Terraform, CI/CD, Linux, and Enterprise Architecture**  
+> Built for real-world DevOps engineering roles and Azure certification interviews.
+
+</div>
 
 ---
 
