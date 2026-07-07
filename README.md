@@ -3,7 +3,7 @@
 # 🚀 DevOps Knowledge Base
 ### DevOps Insiders Batch 18
 
-![Views](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FMihirMaurya-dev%2FDevOps-Notes&count_bg=%23007EC6&title_bg=%23555555&title=Views&edge_flat=true)
+![Views](https://komarev.com/ghpvc/?username=MihirMaurya-dev-DevOps-Notes&label=Views&color=007EC6&style=flat)
 ![Platform](https://img.shields.io/badge/Platform-Azure-0089D6?logo=microsoft-azure&logoColor=white)
 ![IaC](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-Azure_DevOps-0078D7?logo=azure-devops&logoColor=white)
