@@ -16,9 +16,12 @@ status: active
 When provisioning cloud infrastructure, there are two fundamentally different paradigms for interacting with the provider's API (like the Azure Resource Manager):
 
 * **Imperative (The "How"):** You write step-by-step instructions. You tell the system *how* to achieve the end state. 
-  * *Examples:* Bash scripting, Azure CLI commands, PowerShell, or standard programming languages like C#.
+  * *Examples:* Bash scripting, Azure CLI commands (e.g., `az group create --name myRG ...`), PowerShell, or standard programming languages like C#.
+  * *Pros:* Easy for quick one-off tasks.
+  * *Cons:* Hard to manage state. Re-running the script without checks can cause errors if resources already exist.
 * **Declarative (The "What"):** You describe the desired end state, and the execution engine figures out the steps required to get there. 
-  * *Examples:* [[01-Introduction|Terraform]], ARM Templates, Kubernetes YAMLs.
+  * *Examples:* [[01-Introduction|Terraform]] (e.g., writing a `.tf` file defining a Resource Group), ARM Templates, Kubernetes YAMLs.
+  * *Pros:* Idempotent (running it multiple times yields the same result), maintains a state file (`terraform.tfstate`), tracks drift, and is highly readable.
 
 Unlike imperative object-oriented languages like C# where you define specific execution logic, control flows, and methods, declarative languages like HashiCorp Configuration Language (HCL) simply define the required objects. You define that an Azure Resource Group *must exist*, and Terraform handles the creation, update, or deletion logic behind the scenes.
 

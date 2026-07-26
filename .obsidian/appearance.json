@@ -1,7 +1,7 @@
 {
   "cssTheme": "AnuPpuccin",
   "showRibbon": true,
-  "theme": "system",
+  "theme": "moonstone",
   "accentColor": "",
   "enabledCssSnippets": [
     "theme"

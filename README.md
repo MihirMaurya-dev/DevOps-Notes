@@ -45,6 +45,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🗺️ | [10 — CAF Mapping](#️-10--caf-mapping) | Cloud Adoption Framework map | Workloads ↔ CAF pillars |
 | 📅 | [11 — Weekly Learning](#-11--weekly-learning) | Progress tracker & goals | Weekly reviews |
 | 🤖 | [12 — Agentic AI](#-12--agentic-ai) | AI in DevOps engineering | Tool calling, automation |
+| 🔐 | [14 — Security Scanning](#-14--security-scanning) | IaC & secrets security scanning | TFLint, tfsec, Checkov, Gitleaks |
 
 ---
 
@@ -54,24 +55,23 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 | Topic                   | File                                  | Description                           |
 | ----------------------- | ------------------------------------- | ------------------------------------- |
-| 📖 Introduction         | [`01-Terraform/Introduction.md`](01-Terraform/Introduction.md)        | What is Terraform, why IaC            |
-| ⚙️ Installation         | [`01-Terraform/Installation.md`](01-Terraform/Installation.md)        | Install, configure, tfenv             |
-| 🔌 Providers            | [`01-Terraform/Providers.md`](01-Terraform/Providers.md)           | AzureRM, version locking              |
-| 🧱 Resources            | [`01-Terraform/Resources.md`](01-Terraform/Resources.md)           | Resource blocks, meta-args            |
-| 📥 Variables            | [`01-Terraform/Variables.md`](01-Terraform/Variables.md)           | Input vars, tfvars, env vars          |
-| 🔧 Locals               | [`01-Terraform/Locals.md`](01-Terraform/Locals.md)              | Local values, expressions             |
-| 📤 Outputs              | [`01-Terraform/Outputs.md`](01-Terraform/Outputs.md)             | Output blocks, sensitive values       |
-| 💾 State Management     | [`01-Terraform/State-Management.md`](01-Terraform/State-Management.md)    | State file, locking, drift            |
-| 🌐 Remote Backend       | [`01-Terraform/Remote-Backend.md`](01-Terraform/Remote-Backend.md)      | Azure Blob, state locking             |
-| 📦 Modules              | [`01-Terraform/Modules.md`](01-Terraform/Modules.md)             | Module structure, registry            |
-| 🌍 Workspaces           | [`01-Terraform/Workspaces.md`](01-Terraform/Workspaces.md)          | Multi-env with workspaces             |
-| 🔍 Data Sources         | [`01-Terraform/Data-Sources.md`](01-Terraform/Data-Sources.md)        | Querying existing resources           |
-| 🔁 Loops & Conditionals | [`01-Terraform/Loops-Conditionals.md`](01-Terraform/Loops-Conditionals.md)  | count, for_each, dynamic              |
-| ♻️ Lifecycle            | [`01-Terraform/Lifecycle.md`](01-Terraform/Lifecycle.md)           | create_before_destroy, ignore_changes |
-| ⭐ Best Practices        | [`01-Terraform/Best-Practices.md`](01-Terraform/Best-Practices.md)      | Naming, structure, security           |
+| 📖 Introduction         | [`01-Terraform/01-Introduction.md`](01-Terraform/01-Introduction.md)        | What is Terraform, why IaC            |
+| ⚙️ Installation         | [`01-Terraform/02-Installation.md`](01-Terraform/02-Installation.md)        | Install, configure, tfenv             |
+| 🔌 Providers            | [`01-Terraform/03-Providers.md`](01-Terraform/03-Providers.md)           | AzureRM, version locking              |
+| 🧱 Resources            | [`01-Terraform/04-Resources.md`](01-Terraform/04-Resources.md)           | Resource blocks, meta-args            |
+| 📥 Variables            | [`01-Terraform/05-Variables.md`](01-Terraform/05-Variables.md)           | Input vars, tfvars, env vars          |
+| 🔧 Locals               | [`01-Terraform/06-Locals.md`](01-Terraform/06-Locals.md)              | Local values, expressions             |
+| 📤 Outputs              | [`01-Terraform/07-Outputs.md`](01-Terraform/07-Outputs.md)             | Output blocks, sensitive values       |
+| 💾 State Management     | [`01-Terraform/08-State-Management.md`](01-Terraform/08-State-Management.md)    | State file, locking, drift            |
+| 🌐 Remote Backend       | [`01-Terraform/09-Remote-Backend.md`](01-Terraform/09-Remote-Backend.md)      | Azure Blob, state locking             |
+| 📦 Modules              | [`01-Terraform/10-Modules.md`](01-Terraform/10-Modules.md)             | Module structure, registry            |
+| 🌍 Workspaces           | [`01-Terraform/11-Workspaces.md`](01-Terraform/11-Workspaces.md)          | Multi-env with workspaces             |
+| 🔍 Data Sources         | [`01-Terraform/12-Data-Sources.md`](01-Terraform/12-Data-Sources.md)        | Querying existing resources           |
+| 🔁 Loops & Conditionals | [`01-Terraform/13-Loops-Conditionals.md`](01-Terraform/13-Loops-Conditionals.md)  | count, for_each, dynamic              |
+| ♻️ Lifecycle            | [`01-Terraform/14-Lifecycle.md`](01-Terraform/14-Lifecycle.md)           | create_before_destroy, ignore_changes |
+| ⭐ Best Practices        | [`01-Terraform/15-Best-Practices.md`](01-Terraform/15-Best-Practices.md)      | Naming, structure, security           |
 | 📝 Cheat Sheet          | [`01-Terraform/Cheat-Sheet.md`](01-Terraform/Cheat-Sheet.md)         | Quick command reference               |
 | ❓ Interview Questions   | [`01-Terraform/Interview-Questions.md`](01-Terraform/Interview-Questions.md) | Top interview Q&A                     |
-|                         |                                       |                                       |
 
 ---
 
@@ -164,12 +164,12 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 | Topic | File | Description |
 |-------|------|-------------|
-| 🖥️ OS Fundamentals | [`05-Linux/OS-Fundamentals.md`](05-Linux/OS-Fundamentals.md) | Kernel, processes, filesystems |
-| ⌨️ Core Commands | [`05-Linux/Core-Commands.md`](05-Linux/Core-Commands.md) | Essential CLI commands |
-| 🔐 Permissions | [`05-Linux/Permissions.md`](05-Linux/Permissions.md) | chmod, chown, ACLs, sudo |
-| 🌐 Networking | [`05-Linux/Networking.md`](05-Linux/Networking.md) | ip, ss, netstat, firewalld |
-| 🔧 SysAdmin | [`05-Linux/SysAdmin.md`](05-Linux/SysAdmin.md) | systemd, cron, logs, users |
-| 📜 Bash Scripting | [`05-Linux/Bash-Scripting.md`](05-Linux/Bash-Scripting.md) | Scripts, functions, automation |
+| 🖥️ OS Fundamentals | [`05-Linux/00-OS-Fundamentals/`](05-Linux/00-OS-Fundamentals) | Kernel, processes, filesystems |
+| ⌨️ Core Commands | [`05-Linux/01-Core-Commands/`](05-Linux/01-Core-Commands) | Essential CLI commands |
+| 🔐 Permissions | [`05-Linux/02-Permissions/`](05-Linux/02-Permissions) | chmod, chown, ACLs, sudo |
+| 🌐 Networking | [`05-Linux/03-Networking/`](05-Linux/03-Networking) | ip, ss, netstat, firewalld |
+| 🔧 SysAdmin | [`05-Linux/04-SysAdmin/`](05-Linux/04-SysAdmin) | systemd, cron, logs, users |
+| 📜 Bash Scripting | [`05-Linux/05-Bash-Scripting/`](05-Linux/05-Bash-Scripting) | Scripts, functions, automation |
 | 📝 Cheat Sheet | [`05-Linux/Cheat-Sheet.md`](05-Linux/Cheat-Sheet.md) | One-liner quick reference |
 
 ---
@@ -186,6 +186,22 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🔒 Zero Trust | [`06-Architecture-Patterns/Zero-Trust.md`](06-Architecture-Patterns/Zero-Trust.md) | Zero Trust architecture |
 | 🏢 Enterprise Architecture | [`06-Architecture-Patterns/Enterprise-Architecture.md`](06-Architecture-Patterns/Enterprise-Architecture.md) | TOGAF, architecture views |
 | 🤝 Shared Services | [`06-Architecture-Patterns/Shared-Services.md`](06-Architecture-Patterns/Shared-Services.md) | Centralized service design |
+
+---
+
+## 🔐 14 — Security Scanning
+
+> IaC and secrets security scanning tools for production-grade Terraform pipelines.
+
+| Topic | File | Description |
+|-------|------|-------------|
+| 🔧 Terraform Built-ins | [`14-Security-Scanning/01-Terraform-Built-ins.md`](14-Security-Scanning/01-Terraform-Built-ins.md) | terraform fmt & validate |
+| 🔍 TFLint | [`14-Security-Scanning/02-TFLint.md`](14-Security-Scanning/02-TFLint.md) | Linting & provider-specific checks |
+| 🛡️ tfsec | [`14-Security-Scanning/03-Tfsec.md`](14-Security-Scanning/03-Tfsec.md) | Static security analysis for Terraform |
+| ✅ Checkov | [`14-Security-Scanning/04-Checkov.md`](14-Security-Scanning/04-Checkov.md) | Policy-as-code & compliance scanning |
+| 🔬 Trivy | [`14-Security-Scanning/05-Trivy.md`](14-Security-Scanning/05-Trivy.md) | All-in-one vulnerability scanner |
+| 🐷 TruffleHog | [`14-Security-Scanning/06-TruffleHog.md`](14-Security-Scanning/06-TruffleHog.md) | Verified secrets scanning |
+| 🔑 Gitleaks | [`14-Security-Scanning/07-Gitleaks.md`](14-Security-Scanning/07-Gitleaks.md) | Fast secrets detection & pre-commit hooks |
 
 ---
 
@@ -211,10 +227,11 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 | Project | File | Stack |
 |---------|------|-------|
-| ☸️ AKS Platform | [`08-Real-World-Projects/AKS-Platform.md`](08-Real-World-Projects/AKS-Platform.md) | AKS + ACR + Key Vault + OIDC |
-| 🌐 Enterprise Network | [`08-Real-World-Projects/Enterprise-Network.md`](08-Real-World-Projects/Enterprise-Network.md) | Hub-Spoke + Firewall + VPN GW |
-| 🏢 Landing Zone Deployment | [`08-Real-World-Projects/Landing-Zone-Deployment.md`](08-Real-World-Projects/Landing-Zone-Deployment.md) | Full ALZ via Terraform |
-| 🔒 Secure Hub-Spoke | [`08-Real-World-Projects/Secure-Hub-Spoke.md`](08-Real-World-Projects/Secure-Hub-Spoke.md) | Zero-Trust Hub-Spoke topology |
+| ☸️ AKS Platform | [`08-Real-World-Projects/01-AKS-Platform.md`](08-Real-World-Projects/01-AKS-Platform.md) | AKS + ACR + Key Vault + OIDC |
+| 🌐 Enterprise Network | [`08-Real-World-Projects/02-Enterprise-Network.md`](08-Real-World-Projects/02-Enterprise-Network.md) | Hub-Spoke + Firewall + VPN GW |
+| 🏢 Landing Zone Deployment | [`08-Real-World-Projects/03-Landing-Zone-Deployment.md`](08-Real-World-Projects/03-Landing-Zone-Deployment.md) | Full ALZ via Terraform |
+| 🔒 Secure Hub-Spoke | [`08-Real-World-Projects/04-Secure-Hub-Spoke.md`](08-Real-World-Projects/04-Secure-Hub-Spoke.md) | Zero-Trust Hub-Spoke topology |
+| 🤖 Agentic AI Projects | [`08-Real-World-Projects/05-Agentic-AI-Industry-Projects.md`](08-Real-World-Projects/05-Agentic-AI-Industry-Projects.md) | ICU, Petroleum, Automotive (Interview Ready) |
 
 ---
 
@@ -253,10 +270,16 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 | Topic | File | Description |
 |-------|------|-------------|
-| 🧠 Introduction | [`12-Agentic-AI/Introduction.md`](12-Agentic-AI/Introduction.md) | Agents vs Gen AI, ReAct loop |
-| 🛠️ Tool Calling | [`12-Agentic-AI/Tool-Calling.md`](12-Agentic-AI/Tool-Calling.md) | Function calling, guardrails |
-| 🚀 DevOps Use Cases | [`12-Agentic-AI/DevOps-Use-Cases.md`](12-Agentic-AI/DevOps-Use-Cases.md) | Auto-remediation, IaC generation |
-| ❓ Interview Questions | [`12-Agentic-AI/Interview-Questions.md`](12-Agentic-AI/Interview-Questions.md) | AI agent Q&A |
+| 🗺️ Roadmap | [`12-Agentic-AI/00-Roadmap.md`](12-Agentic-AI/00-Roadmap.md) | Full Agentic AI for DevOps learning roadmap |
+| 🧠 Introduction | [`12-Agentic-AI/01-Introduction.md`](12-Agentic-AI/01-Introduction.md) | Agents vs Gen AI, ReAct loop |
+| 🛠️ Tool Calling | [`12-Agentic-AI/02-Tool-Calling.md`](12-Agentic-AI/02-Tool-Calling.md) | Function calling, guardrails |
+| 🚀 DevOps Use Cases | [`12-Agentic-AI/03-DevOps-Use-Cases.md`](12-Agentic-AI/03-DevOps-Use-Cases.md) | Auto-remediation, IaC generation |
+| ❓ Interview Questions | [`12-Agentic-AI/04-Interview-Questions.md`](12-Agentic-AI/04-Interview-Questions.md) | AI agent Q&A |
+| 🐍 Step 1 — Python | [`12-Agentic-AI/05-Python-for-Agentic-AI.md`](12-Agentic-AI/05-Python-for-Agentic-AI.md) | Python skills for building agents |
+| 🔗 Step 2 — Chains/RAG | [`12-Agentic-AI/06-LLM-Chains-n8n-RAG.md`](12-Agentic-AI/06-LLM-Chains-n8n-RAG.md) | LLM chains, n8n, vector DBs, RAG |
+| 🤖 Step 3 — Frameworks | [`12-Agentic-AI/07-Agent-Frameworks.md`](12-Agentic-AI/07-Agent-Frameworks.md) | LangChain, LangGraph, CrewAI deep dive |
+| 🔌 Step 4 — MCP & A2A | [`12-Agentic-AI/08-MCP-and-A2A.md`](12-Agentic-AI/08-MCP-and-A2A.md) | MCP protocol, A2A protocol |
+| 🏆 Finish — Governance | [`12-Agentic-AI/09-AI-Governance-Cost-Observability.md`](12-Agentic-AI/09-AI-Governance-Cost-Observability.md) | Guardrails, cost, LangSmith observability |
 
 ---
 
@@ -409,8 +432,8 @@ updated: YYYY-MM-DD
 
 | Metric | Value |
 |--------|-------|
-| 📁 Total Sections | 12 |
-| 📄 Estimated Notes | 75+ |
+| 📁 Total Sections | 13 |
+| 📄 Estimated Notes | 85+ |
 | 🏗️ Terraform Topics | 17 |
 | ☁️ Azure Services Covered | 17 |
 | 🏢 Landing Zone Design Areas | 17 |
@@ -419,6 +442,7 @@ updated: YYYY-MM-DD
 | 🔨 Real-World Projects | 4 |
 | 📋 Architecture Decision Records | 4 |
 | 🤖 Agentic AI Topics | 4 |
+| 🔐 Security Scanning Tools | 7 |
 
 ---
 

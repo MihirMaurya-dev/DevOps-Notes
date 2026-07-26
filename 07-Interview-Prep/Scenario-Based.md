@@ -1,91 +1,122 @@
 ---
-tags: [interview, prep, scenario, troubleshooting]
+tags: [interview, prep, scenario, troubleshooting, basics, advanced]
 source: devopsinsiders/batch-18
-created: 2026-06-08
-updated: 2026-06-14
+updated: 2026-07-26
 ---
 
-# Scenario-Based Interview Questions
+# Comprehensive DevOps Q&A
 
-Scenario questions test your ability to apply knowledge to solve realistic problems, demonstrating your troubleshooting methodology.
+This guide contains exactly 26 essential DevOps interview questions, ranging from basic concepts to advanced troubleshooting scenarios.
 
-## Scenario 1: The "Cannot Connect" Problem
-**Interviewer:** "A developer tells you they cannot connect from their local laptop to an Azure Linux VM over SSH. Walk me through exactly how you would troubleshoot this."
+## Basics
 
-**Your Answer:**
-1. **Verify the Basics:** I would ask the developer for the exact IP address they are trying to connect to, the username, and the exact error message (e.g., "Connection Refused" vs "Connection Timed Out").
-2. **Check the Azure NSG:** I would go to the Azure Portal (or use CLI) and check the Network Security Group attached to the VM's NIC and Subnet. Is there an inbound rule allowing Port 22 (TCP) from the developer's public IP address?
-3. **Check the VM State:** Is the VM actually running? Is it in a "Failed" state?
-4. **Check Routing/Firewalls:** If the VM is on a private network, is the developer connected to the VPN? Does the Azure Firewall have a rule allowing this traffic?
-5. **Check OS Level (Serial Console):** If the network looks perfect, I would use the Azure Serial Console to log into the VM locally. I would check if the `sshd` service is actually running (`systemctl status sshd`) and check the local OS firewall (`iptables` or `ufw`) to ensure port 22 isn't blocked locally.
+### 1. What is DevOps and what are its core principles?
+DevOps is a cultural and technical movement aimed at breaking down silos between development and operations teams. Its core principles include automation, continuous measurement, and sharing of responsibilities. By fostering collaboration, organizations can deliver software faster and more reliably. It heavily relies on practices like CI/CD and Infrastructure as Code.
 
-## Scenario 2: The "Terraform State Conflict"
-**Interviewer:** "Two developers on your team ran `terraform apply` at the same time. Now the pipeline is failing, saying the state is locked, but neither developer is running Terraform anymore. What happened and how do you fix it?"
+### 2. Explain Continuous Integration vs Continuous Delivery vs Continuous Deployment.
+Continuous Integration (CI) is the practice of frequently merging code changes into a central repository, where automated builds and tests run. Continuous Delivery (CD) extends this by ensuring the code is always in a deployable state, though deployment to production requires manual approval. Continuous Deployment takes it a step further, where every change that passes all stages of the production pipeline is released to customers automatically, with no human intervention. 
 
-**Your Answer:**
-1. **What happened:** When Terraform runs, it creates a lock file in the remote backend (e.g., Azure Blob Storage) to prevent concurrent writes. If a pipeline is killed abruptly or a developer loses internet connection mid-apply, the lock might not be released automatically.
-2. **How to fix it:** I would first verify with the team that no one is genuinely running an apply. Then, I would obtain the Lock ID from the error message. Finally, I would run `terraform force-unlock <Lock_ID>` to manually remove the lock and restore functionality.
+### 3. What is Infrastructure as Code (IaC) and why is it important?
+Infrastructure as Code (IaC) is the management and provisioning of infrastructure through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools. It is crucial because it brings version control, reproducibility, and automation to infrastructure management. This allows teams to spin up environments rapidly and avoid manual configuration drift. Popular tools include Terraform and Ansible.
 
-## Scenario 3: The "Accidental Deletion"
-**Interviewer:** "A junior engineer accidentally deleted a critical Resource Group containing a Production database. What could have prevented this, and what do you do now?"
+### 4. What is the difference between Git and GitHub?
+Git is a distributed version control system installed locally on a developer's machine to track changes in source code. GitHub, on the other hand, is a cloud-based hosting service that lets you manage Git repositories collaboratively. While Git handles the versioning history locally, GitHub provides the remote server where teams can push their code, review pull requests, and manage projects.
 
-**Your Answer:**
-1. **Prevention:** This should have been prevented by a **Resource Lock**. A `CanNotDelete` lock should be applied to all production Resource Groups or critical resources. Additionally, the junior engineer's **RBAC role** was too broad; they should have had "Contributor" access scoped strictly to Dev/Test, or "Reader" access in Production.
-2. **Reaction:** Once deleted, a Resource Group cannot be undeleted. I would immediately invoke our Disaster Recovery plan. I would use our Infrastructure as Code (Terraform) pipelines to recreate the infrastructure components. Then, I would restore the database from the latest automated Geo-Redundant backup. Finally, I would conduct a post-mortem to enforce locks and tighten RBAC.
+### 5. Explain the concept of Containerization and how it differs from Virtualization.
+Containerization packages an application and its dependencies into a single, lightweight executable called a container, which shares the host system's kernel. Virtualization, however, involves running multiple complete operating systems (Virtual Machines) on a single physical server using a hypervisor. Because containers share the OS kernel, they boot much faster and consume far fewer resources than traditional VMs. Docker is the most popular containerization platform.
 
-## Scenario 4: The "Pipeline is Running Terraform but Nothing Changes"
-**Interviewer:** "Your Terraform CI/CD pipeline runs successfully with exit code 0, but no infrastructure is being created or changed. The `terraform plan` output says '0 to add, 0 to change, 0 to destroy.' What could be happening?"
+### 6. What are the common default ports for HTTP, HTTPS, SSH, and RDP?
+These are standard network ports essential for configuring firewalls and security groups. HTTP uses port 80 for unencrypted web traffic, while HTTPS uses port 443 for secure, encrypted web communication. For remote administration, SSH operates on port 22 (primarily for Linux systems), and RDP uses port 3389 (primarily for Windows environments). Knowing these defaults is fundamental for network troubleshooting.
 
-**Your Answer:**
-This is a subtle but common issue. The most likely causes, in order of probability:
-1. **Wrong State File:** The pipeline is pointing to a different backend (or workspace) than expected. I would check the `backend` configuration and the `TF_WORKSPACE` environment variable.
-2. **Already Converged:** The real infrastructure already matches the code exactly (this is the correct behavior — Terraform is idempotent). I would check if someone recently applied the same changes manually.
-3. **Wrong Directory:** The pipeline is running `terraform plan` in a directory with empty or already-applied `.tf` files. I would check the `working-directory` setting in the pipeline YAML.
-4. **Conditional Logic Resolving to Empty:** A `count = 0` or `for_each = {}` in the code is producing zero resources. I would review the variable values being passed to the pipeline to ensure `environment = "prod"` (or whatever controls the count) is set correctly.
+## Intermediate
 
-## Scenario 5: The "High Latency Between Azure and On-Premises"
-**Interviewer:** "After migrating workloads to Azure, users at the headquarters office are complaining of high latency when accessing the new Azure-hosted application. Previously, everything was fast on-premises. What do you investigate?"
+### 7. How does a CI/CD pipeline usually work?
+A CI/CD pipeline automates the software delivery process from code commit to production release. It typically starts with a "build" stage where source code is compiled into artifacts. This is followed by a "test" stage running automated unit and integration tests to ensure code quality. Finally, the "deploy" stage pushes the validated artifacts to staging or production environments, often using tools like Jenkins, GitLab CI, or GitHub Actions.
 
-**Your Answer:**
-1. **Validate the Route:** First, I'd confirm the traffic path. Is it going over a VPN Gateway (public internet, high latency) or ExpressRoute (private circuit, low latency)? Run `traceroute` from an on-premises machine to the Azure VM's private IP. If it's going over the internet, the fix is to configure ExpressRoute or optimize the VPN Gateway SKU.
-2. **Check the Azure Region:** Is the Azure workload deployed in the region closest to headquarters? Deploying to `East US` for a UK-based office adds unnecessary latency. If so, I would evaluate a deployment to `UK South`.
-3. **Check Bandwidth Utilization:** I would check the VPN or ExpressRoute circuit's bandwidth utilization. If the circuit is saturated, I need to upgrade the SKU.
-4. **Check VM Performance:** I would check if the Azure VM itself is the bottleneck. Is it CPU or memory-bound? Use Azure Monitor metrics. If so, I would resize the VM.
-5. **Check DNS Resolution:** If DNS queries are being sent back to on-premises DNS servers for name resolution of Azure resources (instead of using Azure Private DNS), each lookup adds significant latency. I would configure a DNS forwarder or Azure Private DNS Resolver.
-
-## Scenario 6: The "AKS Pods in CrashLoopBackOff"
-**Interviewer:** "Developers are reporting that pods in the production AKS cluster are in 'CrashLoopBackOff' status. How do you diagnose this?"
-
-**Your Answer:**
-`CrashLoopBackOff` means the pod starts, crashes, Kubernetes restarts it, it crashes again — in a loop.
-
+### 8. Explain the difference between `terraform apply` and `terraform plan`.
+The `terraform plan` command reads the current state and creates an execution plan, showing you exactly what changes Terraform will make to your infrastructure without actually applying them. It acts as a dry run for safety verification. Conversely, `terraform apply` takes that plan and makes the actual API calls to cloud providers to create, modify, or delete the resources. Always reviewing the plan before applying is a critical best practice.
 ```bash
-# Step 1: Identify which pods are crashing
-kubectl get pods -n production
-
-# Step 2: Get the events for a specific crashing pod (look for error messages)
-kubectl describe pod <pod-name> -n production
-
-# Step 3: Get the logs from the CURRENT container instance
-kubectl logs <pod-name> -n production
-
-# Step 4: If the container exits too fast, get logs from the PREVIOUS failed instance
-kubectl logs <pod-name> -n production --previous
+terraform plan -out=tfplan
+terraform apply "tfplan"
 ```
 
-Common root causes:
-- **Application startup failure:** The application itself is crashing (check app logs). Common cause: wrong environment variable (e.g., pointing to a wrong database connection string).
-- **Failed readiness probe:** The liveness probe is marking the container unhealthy before it's ready to serve traffic, causing Kubernetes to kill it.
-- **OOMKilled:** The container exceeded its memory `limit` and was killed by the OOM (Out of Memory) killer. Check `kubectl describe pod` for `OOMKilled` in the Last State section.
-- **Image pull error:** The wrong image tag was deployed, or the AKS cluster doesn't have permission to pull from the ACR. Check the pod events for `ErrImagePull`.
+### 9. What is a Dockerfile and what are its key instructions?
+A Dockerfile is a text document containing all the commands a user could call on the command line to assemble a Docker image. Key instructions include `FROM` to specify the base image, and `RUN` to execute commands during the build process. `COPY` or `ADD` is used to bring local files into the image, while `CMD` or `ENTRYPOINT` defines the default executable that runs when a container starts.
+```dockerfile
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y nginx
+COPY ./index.html /var/www/html/
+CMD ["nginx", "-g", "daemon off;"]
+```
 
-## Scenario 7: The "Azure Cost Spike"
-**Interviewer:** "The Azure bill this month is 40% higher than last month. You have no obvious change deployed. How do you identify the cause?"
+### 10. Describe the basic architecture of Kubernetes.
+Kubernetes architecture consists of a Control Plane (Master) and Worker Nodes. The Control Plane manages the cluster state, featuring components like the API Server (for communication), etcd (key-value store for state), Scheduler (assigns workloads), and Controller Manager (maintains desired state). Worker Nodes run the actual applications and contain the Kubelet (node agent), Kube-Proxy (networking), and a container runtime like containerd.
 
+### 11. How do you handle secrets management in a DevOps pipeline?
+Secrets like API keys, database passwords, and certificates should never be hardcoded or committed to source control. Instead, I use a dedicated secrets management tool like HashiCorp Vault, Azure Key Vault, or AWS Secrets Manager. During pipeline execution, tools retrieve these secrets dynamically and inject them as environment variables or temporary files. It is also important to ensure pipeline logs mask any sensitive values that might accidentally be printed.
+
+### 12. What is a Blue-Green deployment strategy?
+Blue-Green deployment is a technique that reduces downtime and risk by running two identical production environments called Blue and Green. At any time, only one environment (e.g., Blue) is live and serving all production traffic. The new version of the application is deployed and tested in the idle environment (Green). Once validated, a load balancer or router simply switches traffic to Green, making rollbacks instantaneous if issues occur.
+
+### 13. Explain the purpose of a Load Balancer in web architecture.
+A Load Balancer distributes incoming network traffic across a group of backend servers or instances. Its primary purpose is to ensure high availability and reliability by routing requests only to healthy servers. It prevents any single server from becoming a bottleneck, effectively managing capacity and load. Modern load balancers also handle SSL termination and provide advanced routing based on URL paths.
+
+## Advanced
+
+### 14. How would you design a Highly Available (HA) architecture in the cloud?
+A Highly Available architecture eliminates single points of failure across the entire stack. I would deploy compute instances across multiple Availability Zones (AZs) behind an Application Load Balancer to ensure localized outages don't bring down the app. The database would be configured in a multi-AZ active-standby setup or a globally distributed NoSQL database. Additionally, I would implement auto-scaling groups to automatically replace unhealthy instances and handle traffic spikes.
+
+### 15. Explain how Kubernetes handles service discovery and internal routing.
+Kubernetes uses Services to expose applications running on a set of Pods as a network service. When a Service is created, Kubernetes assigns it a stable internal IP address (ClusterIP) and a DNS name via CoreDNS. Pods can then communicate with each other using these reliable DNS names, even though individual Pod IPs constantly change. The Kube-Proxy component running on each node implements this routing by updating local iptables or IPVS rules.
+
+### 16. Discuss the differences between mutable and immutable infrastructure.
+Mutable infrastructure allows servers to be updated and modified in place, meaning patches or configuration changes are applied directly to running servers. This often leads to configuration drift and inconsistent environments. Immutable infrastructure, however, dictates that servers are never modified after they are deployed. If an update is needed, a new image is built and fresh instances are provisioned to replace the old ones, ensuring strict consistency and easier rollbacks.
+
+### 17. How do you implement Zero Downtime Deployments?
+Zero downtime deployments ensure an application remains continuously available to users during an upgrade. I implement this using strategies like Blue-Green deployments or Canary releases. In Kubernetes, this is achieved natively using Rolling Updates, where new Pods are spun up and verified via readiness probes before old Pods are terminated. The load balancer continues serving traffic without interruption as the rollout progresses.
+
+### 18. Explain Terraform state management in a team environment.
+In a team environment, storing the Terraform state file locally is dangerous and prevents collaboration. The state file must be stored in a remote backend like AWS S3, Azure Blob Storage, or HashiCorp Terraform Cloud. Crucially, state locking must be enabled (e.g., via a DynamoDB table for S3 backends) to prevent multiple engineers or CI/CD pipelines from modifying infrastructure concurrently, which would corrupt the state.
+
+### 19. How do you monitor and observe microservices effectively?
+Observability in microservices requires three pillars: metrics, logs, and traces. I use Prometheus for collecting numeric metrics (like CPU usage or request rates) and Grafana for visualizing them. Centralized logging via the ELK stack or Fluentd aggregates logs from all microservices into one searchable location. Finally, distributed tracing with tools like Jaeger or OpenTelemetry is critical for tracking a single request as it jumps across multiple asynchronous services.
+
+## Scenario-Based
+
+### 20. Scenario: The "Cannot Connect" Problem
+**Interviewer:** "A developer tells you they cannot connect from their local laptop to an Azure Linux VM over SSH. Walk me through exactly how you would troubleshoot this."
 **Your Answer:**
-1. **Azure Cost Analysis:** Go to Azure Cost Management + Billing → Cost Analysis. Filter by the spike period. Group by **Service**, then by **Resource**, to identify which specific resource type and resource caused the increase.
-2. **Check Azure Advisor:** Azure Advisor often flags idle or underutilized resources. It might identify a large VM or an oversized AKS node pool that was spun up and never turned off.
-3. **Check for Undeleted Dev Resources:** In many organizations, developers spin up expensive resources for testing and forget to delete them. I'd check the `Environment: Dev` tagged resources for anything large and idle.
-4. **Check Data Egress:** Unexpected data transfer charges are a common culprit. I'd check Azure Front Door, VPN Gateways, and storage accounts for unusual outbound data transfer.
-5. **Check for Runaway Autoscaling:** An AKS cluster with aggressive autoscaling may have scaled out to many nodes during a load test that was never decommissioned. Check the node count history.
-6. **Set Up Budgets and Alerts:** As a preventive measure going forward, I would create Azure Budget Alerts to notify the team at 80% and 100% of the monthly budget threshold.
+First, I verify the basics by asking the developer for the exact IP address, username, and error message (e.g., "Connection Refused" vs "Connection Timed Out"). Next, I check the cloud Network Security Group (NSG) attached to the VM's NIC to ensure port 22 is open to their IP. Then, I verify if the VM is actually running and if any enterprise firewalls or VPNs are blocking the route. Finally, if the network is clear, I use the cloud provider's serial console to log into the VM locally and check if the `sshd` service is active and listening.
+
+### 21. Scenario: The "Terraform State Conflict"
+**Interviewer:** "Two developers on your team ran `terraform apply` at the same time. Now the pipeline is failing, saying the state is locked. What happened and how do you fix it?"
+**Your Answer:**
+When Terraform runs, it creates a lock file in the remote backend to prevent concurrent writes, which protects state integrity. If a process is killed abruptly, this lock might not be released automatically. To fix it, I first confirm with the entire team that no active applies are running. Then, I retrieve the Lock ID from the error message and run `terraform force-unlock <Lock_ID>` to manually clear the lock and restore functionality.
+
+### 22. Scenario: The "Accidental Deletion"
+**Interviewer:** "A junior engineer accidentally deleted a critical Resource Group containing a Production database. What could have prevented this, and what do you do now?"
+**Your Answer:**
+This disaster should have been prevented by implementing a Resource Lock (specifically `CanNotDelete`) on production environments, combined with stricter RBAC policies limiting destructive permissions. To react, I would immediately declare a Sev-1 incident and invoke the Disaster Recovery plan. I would use our IaC pipelines to recreate the infrastructure, and then restore the database from the most recent automated backup snapshot. Finally, a blameless post-mortem would be conducted to enforce these safeguards.
+
+### 23. Scenario: The "Pipeline is Running Terraform but Nothing Changes"
+**Interviewer:** "Your CI/CD pipeline runs `terraform apply` successfully with exit code 0, but no infrastructure changes. The plan says '0 to add, 0 to change, 0 to destroy.' Why?"
+**Your Answer:**
+The most likely reason is that the pipeline is pointing to a different state file or workspace than intended, meaning it's comparing the code to the wrong environment. Another possibility is that someone already applied these exact changes manually, so the state is already converged. I would also check if the working directory in the pipeline YAML is correct, or if conditional logic (like `count = 0`) is skipping the resources dynamically.
+
+### 24. Scenario: The "High Latency Between Cloud and On-Premises"
+**Interviewer:** "Users at headquarters complain of high latency accessing a newly migrated cloud application. What do you investigate?"
+**Your Answer:**
+I would first use `traceroute` or `mtr` to validate the network path to see if traffic is taking a sub-optimal internet route instead of a dedicated private link (like ExpressRoute). Next, I check if the application was accidentally deployed to a region physically distant from headquarters. I also review network bandwidth utilization to ensure the VPN isn't saturated, and verify that DNS lookups aren't unnecessarily bouncing back and forth between on-prem and cloud servers.
+
+### 25. Scenario: The "AKS Pods in CrashLoopBackOff"
+**Interviewer:** "Developers report production AKS pods are in 'CrashLoopBackOff'. How do you diagnose this?"
+**Your Answer:**
+`CrashLoopBackOff` means the container starts, crashes, and Kubernetes continuously attempts to restart it. First, I run `kubectl get pods` to identify the failing pod, then `kubectl describe pod <pod-name>` to check events for errors like `OOMKilled` or failed probes. Finally, I check the application logs using `kubectl logs <pod-name> --previous` to see why the application process is fatally exiting. Common causes are missing environment variables or bad database connection strings.
+```bash
+kubectl logs <pod-name> --previous
+```
+
+### 26. Scenario: The "Cloud Cost Spike"
+**Interviewer:** "The cloud bill this month spiked by 40% with no major releases. How do you find the cause?"
+**Your Answer:**
+I start by opening the cloud provider's Cost Management dashboard and grouping the charges by Service and Resource to pinpoint exactly what is driving the cost. I check for orphaned resources, like oversized test VMs or unattached premium disks that developers forgot to delete. I also investigate data egress fees, as unexpected outbound traffic can cause massive spikes. Moving forward, I would set up strict billing alarms and implement auto-shutdown policies for non-production environments.

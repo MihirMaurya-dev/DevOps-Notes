@@ -2,86 +2,418 @@
 tags: [interview, terraform, hcl, state, modules]
 source: devopsinsiders/batch-18
 created: 2026-06-08
-level: intermediate
+updated: 2026-07-26
+level: comprehensive
 ---
 
-# 🎯 Terraform: High-Quality Interview Questions
+# 🎯 Terraform: Comprehensive Interview Questions & Answers
 
-These questions test your deep understanding of Terraform's architecture, state management, and HCL logic. They are designed to mimic real-world scenario questions asked during DevOps or Cloud Engineering interviews.
-
----
-
-## Question 1: The State File Catastrophe
-**Scenario:** 
-You have a Terraform project deploying your company's production databases. An engineer accidentally deleted the `terraform.tfstate` file from your Azure Storage Account backend. The next day, you run `terraform apply` to add a new tag to the database.
-
-**Question:** 
-What exactly will Terraform attempt to do when you run the apply? How do you fix the missing state file without causing downtime?
-
-<details>
-<summary><b>Show Answer</b></summary>
-<br>
-<b>What will happen:</b> Because the state file is missing, Terraform looks at your HCL code and believes <i>nothing</i> has been deployed yet. It will attempt to recreate the production database from scratch. In Azure, because the database name already exists, the deployment will fail with a "Resource Already Exists" error. If it were a resource that supported duplicate names, it would spin up a brand new, empty database alongside the old one!<br><br>
-<b>How to fix it:</b> You absolutely must <i>not</i> run `apply`. You must run the `terraform import` command (or use import blocks) to manually pull the existing cloud resources back into a newly generated state file. Alternatively, if Blob Versioning was enabled on the Azure Storage Account (as per best practice), you could simply restore the previous version of the `.tfstate` file.
-</details>
+This document contains 50 comprehensive interview questions covering everything from Terraform basics to advanced CI/CD scenarios. All code examples use **Azure (azurerm provider)**.
 
 ---
 
-## Question 2: The `depends_on` Anti-Pattern
-**Scenario:**
-A junior engineer wrote Terraform code to deploy an Azure Virtual Network and a Subnet. They added `depends_on = [azurerm_virtual_network.main]` inside the Subnet resource block to ensure the VNet is built first. 
+## 🟢 Basics
 
-**Question:**
-Is this `depends_on` block necessary? Explain how Terraform builds its execution graph and why explicitly using `depends_on` is generally considered an anti-pattern.
-
-<details>
-<summary><b>Show Answer</b></summary>
-<br>
-<b>No, the `depends_on` block is completely unnecessary here.</b><br><br>
-Terraform is a declarative language that builds a <b>Directed Acyclic Graph (DAG)</b> to determine execution order. When the subnet block references the VNet's name (e.g., `virtual_network_name = azurerm_virtual_network.main.name`), Terraform's engine automatically detects this implicit dependency. It knows it <i>must</i> build the VNet first to get the name to pass to the subnet.<br><br>
-Using explicit `depends_on` is considered an anti-pattern because it forces Terraform to wait, often slowing down parallel resource creation. It should only be used in rare "hidden dependency" scenarios (e.g., waiting for an RBAC role assignment to propagate before starting a Virtual Machine script) where Terraform cannot detect the connection through variables.
-</details>
-
----
-
-## Question 3: The `dynamic` Block vs `count`
-**Scenario:**
-You need to deploy 5 Virtual Machines, but you also need to apply 10 different inbound security rules to a single Network Security Group (NSG). 
-
-**Question:**
-Which Terraform looping mechanism (`count`/`for_each` vs `dynamic` block) would you use for the VMs, and which would you use for the NSG rules? Explain the fundamental difference between them.
-
-<details>
-<summary><b>Show Answer</b></summary>
-<br>
-<b>For the VMs:</b> You would use `count` or `for_each` on the `azurerm_linux_virtual_machine` resource. <br>
-<b>For the NSG Rules:</b> You would use a `dynamic` block inside the `azurerm_network_security_group` resource.<br><br>
-<b>The Difference:</b><br>
-- `count` and `for_each` are used to stamp out entirely separate <b>Resource Blocks</b>. If you use `count = 5`, Terraform creates 5 distinct Virtual Machine resources in the state file.<br>
-- `dynamic` blocks are used to stamp out <b>Nested Blocks</b> <i>inside</i> a single resource. A Network Security Group is only one Azure resource, but it requires multiple `security_rule {}` sub-blocks inside it. A dynamic block loops through a variable map to generate those inner sub-blocks cleanly without duplicating the parent resource.
-</details>
-
----
-
-## Question 4: Module Variable Traps
-**Scenario:**
-You wrote a brilliant Terraform Module that deploys a complete Web App environment. You hardcoded the region as `location = "eastus"` directly inside the module's `main.tf` file. Your team in Europe tries to use your module to deploy to `westeurope`.
-
-**Question:**
-Why is hardcoding the location an anti-pattern in module design? How must you alter the module to allow the European team to use it without changing your module's source code?
-
-<details>
-<summary><b>Show Answer</b></summary>
-<br>
-Hardcoding values inside a module defeats the entire purpose of modularity, which is <b>reusability</b>. If a value is hardcoded, the module can only ever be used for that exact specific scenario.<br><br>
-To fix this, you must "parameterize" the module. <br>
-1. Inside the module, you declare a variable: `variable "location" {}`.<br>
-2. You replace the hardcoded string in the module's code with `location = var.location`.<br>
-3. When the European team calls the module in their root code, they pass the parameter in: <br>
+### Question 1: What is Terraform?
+**Answer:** Terraform is an open-source Infrastructure as Code (IaC) tool created by HashiCorp. It lets you define and provision cloud infrastructure using a declarative language called HCL (HashiCorp Configuration Language). In Azure, you use Terraform with the `azurerm` provider to create resources like VNets, VMs, AKS clusters, and Key Vaults.
 ```hcl
-module "web_app" {
-  source   = "./modules/webapp"
-  location = "westeurope"
+# Minimal Azure provider configuration
+provider "azurerm" {
+  features {}
+  subscription_id = var.subscription_id
 }
 ```
-</details>
+
+### Question 2: What is Infrastructure as Code (IaC)?
+**Answer:** Infrastructure as Code (IaC) is the practice of managing and provisioning cloud infrastructure through code files instead of clicking through a portal or running manual CLI commands. It brings software engineering practices — version control, code review, automated testing, CI/CD — to infrastructure management. With IaC, your infrastructure is reproducible, consistent, and auditable.
+
+### Question 3: What is the difference between Terraform and Ansible?
+**Answer:** Terraform is a **provisioning** tool — it creates, modifies, and destroys infrastructure (VMs, VNets, databases). Ansible is a **configuration management** tool — it configures software and OS settings on machines that already exist. In practice, you use Terraform to build the Azure VM, then Ansible (or cloud-init) to install and configure software on it.
+
+### Question 4: What is an execution plan in Terraform?
+**Answer:** An execution plan is generated by `terraform plan` and shows exactly what Terraform will create, update, or destroy — before making any changes. It acts as a safety preview. In CI/CD pipelines, you typically show the plan to a reviewer before running `terraform apply`.
+
+### Question 5: What does `terraform init` do?
+**Answer:** `terraform init` initialises the working directory. It downloads the required provider plugins (e.g., `azurerm`), sets up the remote backend (e.g., Azure Storage Account), and downloads any referenced modules. It is always the **first command** you run in a new Terraform project.
+
+### Question 6: What does `terraform validate` do?
+**Answer:** `terraform validate` checks whether the HCL syntax and structure is correct. It does not connect to Azure or check real resources — it only validates your code. Run it in CI before `terraform plan` to catch typos and missing variable references early.
+
+### Question 7: What is a provider in Terraform?
+**Answer:** A provider is a plugin that lets Terraform communicate with a specific platform's API. For Azure, the provider is `azurerm`. Without the provider, Terraform has no way to create Azure resources. You pin the provider version to prevent unexpected upgrades from breaking your code.
+```hcl
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.110"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+```
+
+### Question 8: What is HCL?
+**Answer:** HCL stands for HashiCorp Configuration Language. It is the declarative language used to write Terraform `.tf` files. It is designed to be human-readable and easy to understand — you describe **what** you want (e.g., an Azure VNet with address space `10.0.0.0/16`), and Terraform figures out **how** to build it.
+
+---
+
+## 🟡 Core Concepts
+
+### Question 9: What are Terraform input variables?
+**Answer:** Input variables act as parameters for your Terraform configuration. They allow you to pass different values (like VM size or location) without editing the source code. You define them with a `variable` block and supply values via `.tfvars` files, CLI flags, or environment variables.
+```hcl
+variable "vm_size" {
+  type        = string
+  description = "Size of the Azure VM"
+  default     = "Standard_B2s"
+}
+
+# Usage
+resource "azurerm_linux_virtual_machine" "vm" {
+  size = var.vm_size
+  # ...
+}
+```
+
+### Question 10: What are output variables?
+**Answer:** Output variables expose useful information from your infrastructure after `apply` completes — for example, the public IP of an Azure VM or the AKS cluster name. They also pass data from a child module back to the root module.
+```hcl
+output "vm_public_ip" {
+  description = "The public IP address of the VM"
+  value       = azurerm_public_ip.pip.ip_address
+}
+```
+
+### Question 11: What are locals in Terraform?
+**Answer:** Locals assign a name to an expression so you can reuse it without repeating it. Unlike variables, locals cannot be overridden from outside the module — they are internal to the configuration. They are great for combining values or building resource names consistently.
+```hcl
+locals {
+  resource_prefix = "${var.environment}-${var.project}"
+  common_tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+    Project     = var.project
+  }
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = "${local.resource_prefix}-rg"
+  location = var.location
+  tags     = local.common_tags
+}
+```
+
+### Question 12: What are data sources in Terraform?
+**Answer:** Data sources let Terraform **read** information about existing resources that Terraform didn't create — or that are managed in a different state file. You use `data` blocks to look up existing Azure resources without importing them into your state.
+```hcl
+# Look up an existing Key Vault by name
+data "azurerm_key_vault" "existing_kv" {
+  name                = "kv-shared-prod"
+  resource_group_name = "rg-shared-prod"
+}
+
+# Use its ID in a new resource
+resource "azurerm_key_vault_secret" "db_password" {
+  key_vault_id = data.azurerm_key_vault.existing_kv.id
+  name         = "db-admin-password"
+  value        = var.db_password
+}
+```
+
+### Question 13: What is the difference between implicit and explicit dependencies?
+**Answer:** An **implicit dependency** is automatically detected when one resource references an attribute of another (e.g., a subnet referencing the VNet's ID). Terraform builds a dependency graph and creates resources in the correct order automatically. An **explicit dependency** is declared with `depends_on` when Terraform cannot detect the connection on its own.
+
+### Question 14: When should you use `depends_on`?
+**Answer:** Use `depends_on` only for **hidden dependencies** — situations where two resources are related but one doesn't reference an attribute of the other. For example, a VM that must wait for a role assignment to propagate in Entra ID before it can access a Key Vault. Overusing `depends_on` slows down parallel resource creation.
+
+### Question 15: What is the `count` meta-argument?
+**Answer:** `count` creates multiple identical copies of a resource from a single block. Each instance gets an index (`count.index`) starting from 0. The risk: if you remove an item from the middle of the list, all subsequent indexes shift, causing unexpected destroys and recreates.
+```hcl
+resource "azurerm_resource_group" "rg" {
+  count    = 3
+  name     = "rg-app-${count.index}"
+  location = var.location
+}
+# Creates: rg-app-0, rg-app-1, rg-app-2
+```
+
+### Question 16: How is `for_each` different from `count`?
+**Answer:** `for_each` uses a map or set of strings as keys rather than numeric indexes. Each resource is tracked by its key (e.g., `"web"`, `"app"`, `"db"`), not a position. This means removing one key does NOT affect resources with other keys — much safer than `count`.
+```hcl
+resource "azurerm_subnet" "subnets" {
+  for_each = {
+    web = "10.0.1.0/24"
+    app = "10.0.2.0/24"
+    db  = "10.0.3.0/24"
+  }
+  name                 = "${each.key}-subnet"
+  address_prefixes     = [each.value]
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+}
+```
+
+### Question 17: What are `dynamic` blocks?
+**Answer:** `dynamic` blocks generate repeated **nested blocks** inside a resource based on a variable — for example, multiple NSG security rules or multiple firewall rules. It is specifically for nested sub-blocks (like `security_rule {}`) rather than for creating multiple top-level resources (which is what `for_each` does).
+```hcl
+resource "azurerm_network_security_group" "nsg" {
+  name                = "nsg-web"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.location
+
+  dynamic "security_rule" {
+    for_each = var.nsg_rules
+    content {
+      name                       = security_rule.value.name
+      priority                   = security_rule.value.priority
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = security_rule.value.port
+      source_address_prefix      = security_rule.value.source
+      destination_address_prefix = "*"
+    }
+  }
+}
+```
+
+---
+
+## 🟠 State Management
+
+### Question 18: What is the Terraform state file?
+**Answer:** The state file (`terraform.tfstate`) is a JSON file where Terraform maps your HCL configuration to real Azure resources. It stores resource IDs, metadata, and attributes. It is the single source of truth for what Terraform currently manages — without it, Terraform doesn't know what already exists.
+
+### Question 19: Why should you never store state locally in a team?
+**Answer:** Local state means teammates can't see or share the current infrastructure state. Two engineers running `apply` simultaneously will corrupt each other's state. Also, local state files often contain secrets in plain text and are not backed up. Always use a remote backend like Azure Storage Account.
+
+### Question 20: What is a remote backend and how do you configure one in Azure?
+**Answer:** A remote backend stores the state file in a shared, secure location. For Azure, the standard backend is an Azure Storage Account Blob container. It supports state locking via blob lease, encryption at rest, and access control via RBAC.
+```hcl
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-state"
+    storage_account_name = "stterraformstateprod"
+    container_name       = "tfstate"
+    key                  = "prod/main.tfstate"
+  }
+}
+```
+
+### Question 21: What is state locking and why does it matter?
+**Answer:** State locking prevents two concurrent `terraform apply` runs from corrupting the state simultaneously. Azure Storage Account backend uses **blob lease locking** — the first process acquires a lease on the blob, and any subsequent process attempting to lock will wait or fail. Without locking, two CI/CD pipelines running at the same time can corrupt state.
+
+### Question 22: What happens if the state file is deleted?
+**Answer:** Terraform believes nothing is deployed. Running `apply` would attempt to create everything from scratch and fail with "resource already exists" errors in Azure. To recover: restore the state from blob versioning (if enabled) or use `terraform import` on each existing resource to rebuild the state file.
+
+### Question 23: How do you import an existing Azure resource into Terraform state?
+**Answer:** Use `terraform import` with the resource address and Azure resource ID. This adds the resource to state without modifying the live Azure resource. After importing, run `terraform plan` — if your HCL doesn't match the real configuration, it will show a diff to reconcile.
+```bash
+# Import an existing Azure Resource Group
+terraform import azurerm_resource_group.rg \
+  /subscriptions/<sub-id>/resourceGroups/rg-my-existing-rg
+
+# Import an existing Azure VM
+terraform import azurerm_linux_virtual_machine.vm \
+  /subscriptions/<sub-id>/resourceGroups/rg-prod/providers/Microsoft.Compute/virtualMachines/vm-prod-01
+```
+
+### Question 24: What does `terraform refresh` do?
+**Answer:** `terraform refresh` syncs the state file with the real-world Azure resources by querying the Azure APIs. In modern Terraform (v0.15+), this happens automatically during `plan`. Running it manually is rarely needed.
+
+### Question 25: How do you remove a resource from state without destroying it in Azure?
+**Answer:** Use `terraform state rm <resource_address>`. This removes Terraform's tracking of the resource without touching the real Azure resource. Useful when you want to stop managing a resource with Terraform, or before manually deleting it outside Terraform.
+```bash
+terraform state rm azurerm_resource_group.rg
+```
+
+### Question 26: What are Terraform workspaces?
+**Answer:** Workspaces let you maintain multiple separate state files in the same backend container using the same code directory. `terraform workspace new dev` creates a dev workspace whose state is stored separately from `default`. However, for strict production isolation, most teams prefer **separate directories and separate state files** over workspaces.
+```bash
+terraform workspace new dev
+terraform workspace select prod
+terraform workspace list
+```
+
+---
+
+## 🟣 Modules
+
+### Question 27: What is a Terraform module?
+**Answer:** A module is a folder containing `.tf` files that can be called from other configurations. Modules let you package reusable infrastructure patterns — for example, a VNet module that always creates a VNet + subnets + NSG together, ensuring consistency across all projects.
+
+### Question 28: What is the difference between a root module and a child module?
+**Answer:** The **root module** is the working directory where you run `terraform apply`. A **child module** is any module called with a `module {}` block. The root module orchestrates the deployment by calling child modules and passing variables into them.
+
+### Question 29: How do you call a child module and pass variables?
+```hcl
+module "virtual_network" {
+  source              = "./modules/virtual-network"
+  vnet_name           = "vnet-app-prod"
+  address_space       = ["10.0.0.0/16"]
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  tags                = local.common_tags
+}
+```
+
+### Question 30: How do you use outputs from a child module?
+**Answer:** The child module must define an `output` block. The parent accesses it with `module.<module_name>.<output_name>`.
+```hcl
+# In parent module — use subnet IDs from the network module
+resource "azurerm_linux_virtual_machine" "vm" {
+  network_interface_ids = [azurerm_network_interface.nic.id]
+  # Reference subnet output from network module
+  # nic references: module.virtual_network.web_subnet_id
+}
+```
+
+### Question 31: What is the Terraform Registry?
+**Answer:** The Terraform Registry (registry.terraform.io) is a public library of providers and reusable modules. For Azure, HashiCorp and Microsoft publish official modules for AKS, VNet, and other services. You can reference them directly in your code with a version pin.
+
+### Question 32: Why is hardcoding values in modules an anti-pattern?
+**Answer:** Hardcoded values (like `location = "eastus"`) make the module non-reusable. If another team wants to deploy to `uksouth`, they have to fork and modify your module. Always parameterise with variables — hardcoded values belong only in `terraform.tfvars`, never in the module source.
+
+### Question 33: How do you version-pin a module?
+```hcl
+# Pin to a specific git tag — prevents upstream changes from breaking you
+module "virtual_network" {
+  source = "git::https://github.com/your-org/terraform-azure-modules.git//virtual-network?ref=v2.1.0"
+
+  vnet_name           = "vnet-prod"
+  address_space       = ["10.0.0.0/16"]
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.location
+}
+```
+
+### Question 34: What are the benefits of using modules?
+**Answer:** Modules enforce consistency (everyone uses the same VNet pattern), reduce copy-pasting, make code readable, allow isolated unit testing, and enable version control of infrastructure patterns. A well-designed module library is one of the most valuable assets an Azure platform team can have.
+
+---
+
+## 🔴 Advanced
+
+### Question 35: How does Terraform handle secrets in Azure?
+**Answer:** Never hardcode secrets in `.tf` files. Best practice is to store secrets in **Azure Key Vault** and read them using a `data` block at deploy time. Mark sensitive variables with `sensitive = true` to prevent them from printing in logs. Ensure the remote state backend (Azure Storage Account) has encryption at rest enabled.
+```hcl
+data "azurerm_key_vault_secret" "db_password" {
+  name         = "prod-db-password"
+  key_vault_id = data.azurerm_key_vault.kv.id
+}
+
+resource "azurerm_linux_virtual_machine" "vm" {
+  admin_password = data.azurerm_key_vault_secret.db_password.value
+  # ...
+}
+```
+
+### Question 36: What is a provisioner and why should you avoid it?
+**Answer:** Provisioners (`local-exec`, `remote-exec`) run shell scripts on local or remote machines after resource creation. Terraform can't track the outcome of scripts in its state, making resources "opaque." HashiCorp recommends using **cloud-init** (for Azure VMs), **Azure Custom Script Extension**, or **Ansible** instead.
+
+### Question 37: What is `null_resource`?
+**Answer:** `null_resource` is a resource that creates nothing in Azure. It is used as a hook to run `local-exec` scripts or to trigger re-execution when certain variables change (`triggers` map). It is a workaround for logic Terraform doesn't natively support.
+
+### Question 38: How do you force-recreate a resource in Terraform?
+**Answer:** Use `terraform apply -replace="<resource_address>"`. This marks the resource for destruction and recreation on the next apply. The old `terraform taint` command is deprecated in favour of this approach.
+```bash
+terraform apply -replace="azurerm_linux_virtual_machine.vm"
+```
+
+### Question 39: What does `create_before_destroy` do?
+**Answer:** By default, when Terraform needs to replace a resource (e.g., renaming a VM requires destroying and recreating it), it destroys the old one first — causing downtime. `create_before_destroy = true` reverses this: the new resource is created first, and only after success is the old one deleted. Useful for zero-downtime replacements.
+```hcl
+resource "azurerm_linux_virtual_machine" "vm" {
+  # ...
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+```
+
+### Question 40: What does `prevent_destroy` do?
+**Answer:** `prevent_destroy = true` causes Terraform to throw an error and stop if any operation would destroy this resource. Essential for protecting critical Azure resources like production databases, Key Vaults, and storage accounts from accidental deletion.
+```hcl
+resource "azurerm_key_vault" "kv" {
+  # ...
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+```
+
+### Question 41: What does `ignore_changes` do?
+**Answer:** `ignore_changes` tells Terraform to ignore drift on specific attributes. For example, AKS Cluster Autoscaler changes the node count at runtime — without `ignore_changes`, Terraform would reset the count on every apply.
+```hcl
+resource "azurerm_kubernetes_cluster" "aks" {
+  # ...
+  lifecycle {
+    ignore_changes = [
+      default_node_pool[0].node_count  # Managed by Cluster Autoscaler
+    ]
+  }
+}
+```
+
+### Question 42: How do you manage multi-environment deployments in Azure?
+**Answer:** Best practice is to use **separate directories** for each environment (`environments/dev/`, `environments/prod/`) each with their own `backend.tf` (pointing to separate state files) and `terraform.tfvars`. All environments call the same reusable child modules — only the variable values differ.
+
+### Question 43: What is Terragrunt?
+**Answer:** Terragrunt is a wrapper around Terraform that solves DRY problems at scale — it auto-generates backend configs, runs Terraform across multiple modules in dependency order, and handles environment-specific `.tfvars` inheritance. It is popular in large Azure Landing Zone deployments with dozens of state files.
+
+---
+
+## 🔥 Scenario-Based
+
+### Question 44: The State File Catastrophe
+**Scenario:** An engineer accidentally deleted the `terraform.tfstate` blob from the Azure Storage Account backend. You run `terraform apply` the next morning to add a tag to the production database. What happens?
+**Answer:** Terraform sees an empty state and thinks nothing is deployed. It will try to create all resources from scratch, immediately failing with "A resource with this name already exists" errors from Azure. **Do not run apply.** Instead: check Azure Storage Blob versioning to restore the previous state version, or use `terraform import` to rebuild the state by re-mapping each live Azure resource to its Terraform address.
+
+### Question 45: The `depends_on` Anti-Pattern
+**Scenario:** A junior engineer added `depends_on = [azurerm_virtual_network.vnet]` inside the subnet resource block. Is this necessary?
+**Answer:** No — it is unnecessary and harmful. Terraform automatically detects the implicit dependency because the subnet references `virtual_network_name = azurerm_virtual_network.vnet.name`. The engine builds a dependency graph and orders creation correctly. Adding an unnecessary `depends_on` prevents Terraform from creating other independent resources in parallel, slowing the deployment.
+
+### Question 46: Module Variable Hardcoding
+**Scenario:** You hardcoded `location = "eastus"` inside a shared VNet module. The UK team wants to use it for `uksouth`. What is the problem and fix?
+**Answer:** The module cannot be deployed in any other region without changing the module source code itself, which breaks other teams using it. Fix: replace `location = "eastus"` with a `variable "location" {}` block in the module and pass the value from the calling code: `location = "uksouth"`.
+
+### Question 47: Resource Renaming Causes Destruction
+**Scenario:** You rename `resource "azurerm_resource_group" "rg"` to `resource "azurerm_resource_group" "main"`. You run `terraform plan`. What happens?
+**Answer:** Terraform sees the old address `azurerm_resource_group.rg` as deleted (plan to destroy) and `azurerm_resource_group.main` as new (plan to create). This would **delete the entire resource group and everything inside it** in Azure. Fix: use the `moved` block to tell Terraform this was a rename, not a delete + create.
+```hcl
+moved {
+  from = azurerm_resource_group.rg
+  to   = azurerm_resource_group.main
+}
+```
+
+### Question 48: Rolling Back a Partial Failure
+**Scenario:** A CI/CD pipeline ran `terraform apply` and half the resources were created before it failed. How do you roll back?
+**Answer:** Terraform has no automatic rollback. The state file tracks exactly what succeeded before the failure. Fix the error in the HCL (or revert the Git commit), then run `terraform apply` again — Terraform will compare current state against the desired config and only apply the remaining changes. If you need to undo already-applied resources, you must either revert the code fully and re-apply, or manually destroy the partially created resources.
+
+### Question 49: Azure API Rate Limiting
+**Scenario:** You have a monolithic state file with 2,000 Azure resources. `terraform plan` is hitting Azure API rate limits and taking 30+ minutes. How do you fix it?
+**Answer:** Break the monolith into smaller, logically separated state files — one for the network layer (VNet, subnets, NSGs), one for the compute layer (VMs, AKS), one for the data layer (Storage, SQL). Use separate `backend` configs per file. Also use `terraform plan -refresh=false` in CI when you're confident no manual drift has occurred, to skip re-reading all 2,000 resources from Azure.
+
+### Question 50: Detecting Infrastructure Drift in Azure
+**Scenario:** Someone manually added an inbound rule to an NSG in the Azure Portal. Your pipeline needs to detect this drift automatically. How do you set this up?
+**Answer:** Schedule a nightly CI/CD job that runs `terraform plan -detailed-exitcode`. Exit code 0 = no changes, exit code 2 = drift detected. When exit code is 2, trigger a Slack/Teams alert or create a Jira ticket. The team can then decide: update the HCL to match the manual change (`terraform import`) or revert the portal change (`terraform apply`).
+```yaml
+# GitHub Actions nightly drift detection
+- name: Check for Azure infrastructure drift
+  run: |
+    terraform plan -detailed-exitcode
+  continue-on-error: true
+  id: plan
+
+- name: Alert on drift
+  if: steps.plan.outputs.exitcode == '2'
+  run: |
+    curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+      -d '{"text": "⚠️ Infrastructure drift detected in Azure! Review terraform plan output."}'
+```

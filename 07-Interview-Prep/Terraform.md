@@ -1,245 +1,129 @@
 ---
 tags: [interview, prep, terraform, questions]
 source: devopsinsiders/batch-18
-created: 2026-06-08
-updated: 2026-06-14
+updated: 2026-07-26
 ---
 
 # Terraform Interview Questions
 
-A collection of common interview questions regarding Infrastructure as Code using Terraform.
+A collection of comprehensive interview questions regarding Infrastructure as Code using Terraform, ranging from basics to scenario-based.
 
 ---
 
-## Q1: What is the `terraform state` file and why is it important?
-**A:** The `terraform.tfstate` file is a JSON file that Terraform uses to map the real-world infrastructure (like an actual Azure VM) to the configuration written in your `.tf` files. It keeps track of metadata and dependencies. It is critical because without it, Terraform wouldn't know what it has already created, and running `terraform apply` again might attempt to recreate existing resources or fail.
+## Basics
 
----
+### Q1: What is Terraform and what problem does it solve?
+**A:** Terraform is an open-source Infrastructure as Code (IaC) tool created by HashiCorp. It allows you to define, provision, and manage cloud infrastructure using a declarative configuration language (HCL). It solves the problem of manual infrastructure management by making deployments reproducible, version-controllable, scalable, and self-documenting.
 
-## Q2: How do you handle Terraform state in a team environment?
-**A:** You must configure a **Remote Backend**. In Azure, this means storing the state file in an Azure Storage Account container. This ensures that everyone on the team (and the CI/CD pipeline) is reading from and writing to the exact same state file. You also must enable **State Locking** (which Azure Blob Storage supports natively) to prevent two people from running `terraform apply` at the same time and corrupting the file.
-
-```hcl
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "rg-terraform-state"
-    storage_account_name = "stterraformstate001"
-    container_name       = "tfstate"
-    key                  = "prod/terraform.tfstate"
-  }
-}
-```
-
----
-
-## Q3: What is the difference between a Variable and a Local in Terraform?
+### Q2: What are the core stages of the Terraform workflow?
 **A:** 
-- **Variables (`variable`):** Are inputs to your Terraform module. Their values can be passed in by the user at runtime via `.tfvars` files, environment variables, or the CLI.
-- **Locals (`locals`):** Are internal values defined within the Terraform code. They are used to reduce repetition (e.g., combining a prefix, environment name, and resource type into a single string). Users cannot override locals from the outside.
+1. **Write:** Authoring infrastructure configuration in `.tf` files.
+2. **Init:** Running `terraform init` to download required providers and initialize the backend.
+3. **Plan:** Running `terraform plan` to generate an execution plan showing what resources will be created, updated, or deleted.
+4. **Apply:** Running `terraform apply` to execute the plan and provision real resources.
 
-```hcl
-variable "environment" {
-  type    = string
-  default = "dev"
-}
+### Q3: What is a Terraform Provider?
+**A:** A provider is a plugin that Terraform uses to interact with cloud platforms and other APIs. It translates Terraform HCL code into API calls for the target platform. For this course, we use the `azurerm` provider which translates configuration into Azure Resource Manager (ARM) API calls to create and manage Azure resources like VNets, VMs, and AKS clusters.
 
-locals {
-  resource_prefix = "${var.project}-${var.environment}"
-}
-```
+### Q4: What is the `terraform.tfstate` file?
+**A:** The state file is a JSON file where Terraform maps your configured resources to the real-world infrastructure instances. It tracks metadata, resource dependencies, and configuration parameters. Terraform uses this state to determine what changes need to be made during the next `apply` operation.
 
----
+### Q5: What is the difference between a Variable and a Local in Terraform?
+**A:** 
+- **Variables (`variable`):** Are dynamic inputs to a Terraform module. Their values can be provided by users at runtime via `.tfvars` files, environment variables, or CLI arguments.
+- **Locals (`locals`):** Are internal variables defined within the code to reduce repetition and complex expressions. They are scoped locally and cannot be overridden by users at runtime.
 
-## Q4: How do you pass a sensitive password to Terraform without hardcoding it?
-**A:** You can define a variable and mark it as `sensitive = true`. You then pass the value to Terraform at runtime using environment variables (e.g., `export TF_VAR_db_password="SuperSecret"`). Alternatively, in a CI/CD pipeline, you can use an Azure Key Vault data source to dynamically fetch the secret during the plan/apply phase so it never exists in the configuration files or pipeline logs.
+### Q6: How do you pass inputs to Terraform without user interaction?
+**A:** You can use a `.tfvars` file (e.g., `terraform apply -var-file="prod.tfvars"`), or use environment variables prefixed with `TF_VAR_` (e.g., `export TF_VAR_location="eastus"`). You can also pass variables directly in the CLI using the `-var` flag.
 
-```hcl
-variable "db_password" {
-  type      = string
-  sensitive = true
-}
-
-# Or fetch directly from Key Vault
-data "azurerm_key_vault_secret" "db_password" {
-  name         = "db-password"
-  key_vault_id = azurerm_key_vault.main.id
-}
-```
+### Q7: What are Terraform Modules?
+**A:** Modules are self-contained packages of Terraform configurations that are managed as a group. They enable reusability, allowing you to define a standard pattern (like an AKS cluster setup) and instantiate it multiple times across different environments by simply changing the input variables.
 
 ---
 
-## Q5: What is a Terraform Provider?
-**A:** A provider is a plugin that Terraform uses to translate the HCL code into API calls for a specific platform. For example, the `azurerm` provider translates Terraform code into Azure Resource Manager API calls, while the `aws` provider translates code into Amazon Web Services API calls.
+## Intermediate
 
-```hcl
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.100"
-    }
-  }
-}
-```
+### Q8: How do you handle Terraform state in a multi-developer team?
+**A:** You configure a **Remote Backend** to store the state file centrally in an **Azure Storage Account blob container**. This ensures all team members and CI/CD pipelines use the exact same state. Crucially, Azure Blob Storage natively supports **State Locking** via blob lease — it prevents two concurrent `terraform apply` executions from running simultaneously and corrupting the state.
 
----
+### Q9: What is the difference between `count` and `for_each`?
+**A:** Both create multiple instances of a resource. 
+- **`count`** uses an integer index (0, 1, 2...). If an item is removed from the middle of the list, indexes shift, causing Terraform to destroy and recreate subsequent resources unnecessarily.
+- **`for_each`** uses a map key or set string as an identifier. Adding or removing elements only impacts that specific key, making it far safer for named infrastructure resources.
 
-## Q6: How does `terraform import` work and when would you use it?
-**A:** `terraform import` associates an **existing real-world resource** with a Terraform resource block in your configuration. Terraform reads the resource's current state from the cloud provider API and writes it into the state file — but it does **not** generate the HCL configuration for you (you must write that manually, or use `terraform plan -generate-config-out` in Terraform 1.5+).
+### Q10: How do you handle sensitive values in Terraform without hardcoding them?
+**A:** You declare a variable and mark it with `sensitive = true`, preventing its value from displaying in CLI logs. You then provide the value dynamically via environment variables or CI/CD secrets. Better yet, you can use data sources like `data "azurerm_key_vault_secret"` to dynamically retrieve the secret during runtime.
 
-**When to use it:**
-- Resources were created manually in the Azure Portal before Terraform was adopted.
-- Resources created by another team or tool that you now want to manage with Terraform.
-- Recovering from state drift after manual changes.
+### Q11: Explain the `lifecycle` meta-argument and its common options.
+**A:** The `lifecycle` block controls how Terraform creates, updates, and deletes resources, overriding default behaviors.
+- `create_before_destroy`: Creates the replacement resource before deleting the old one, minimizing downtime.
+- `prevent_destroy`: Returns an error if a plan attempts to delete the resource, protecting critical assets like databases.
+- `ignore_changes`: Tells Terraform to ignore drift on specific attributes (e.g., tags updated by a different process).
 
-```bash
-# Syntax: terraform import <resource_address> <provider_resource_id>
-terraform import azurerm_resource_group.main \
-  /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-prod
+### Q12: What is the difference between `terraform taint` and `terraform apply -replace`?
+**A:** Both are used to force Terraform to destroy and recreate a specific resource. 
+- `terraform taint` is an older, deprecated command that manually marked a resource as tainted in the state file, requiring a subsequent `apply`.
+- `terraform apply -replace="<resource>"` is the modern, single-step approach to force replacement without permanently modifying the state first.
 
-# Terraform 1.5+ import block (declarative, preferred)
-# In .tf file:
-# import {
-#   to = azurerm_resource_group.main
-#   id = "/subscriptions/.../resourceGroups/rg-prod"
-# }
-```
+### Q13: What are Terraform Data Sources?
+**A:** Data sources allow Terraform to fetch data computed elsewhere or infrastructure created outside of the current Terraform configuration. For example, you can use a data source to fetch the ID of an existing Virtual Network to deploy new VMs into it, without having Terraform manage the Virtual Network itself.
 
-> [!warning]
-> After import, always run `terraform plan` to verify that Terraform's desired state matches the imported resource's actual state. Any diff will be applied on the next `apply`, potentially causing unintended changes.
+### Q14: How does `terraform import` work?
+**A:** `terraform import` allows you to bring existing, manually created infrastructure under Terraform management. You provide the Terraform resource address and the cloud provider ID. Terraform will fetch the current state from the cloud provider and add it to the state file. You still need to manually write the matching HCL configuration block (unless using the newer `import` blocks in TF 1.5+).
+
+### Q15: What is a Provisioner in Terraform?
+**A:** Provisioners (like `local-exec` or `remote-exec`) execute scripts on a local or remote machine as part of resource creation or destruction. HashiCorp considers them a "last resort." It's generally better to use native cloud configuration tools like cloud-init, Ansible, or Packer instead.
 
 ---
 
-## Q7: What is the difference between `terraform taint` and `terraform replace`?
-**A:**
-- **`terraform taint` (deprecated in v0.15.2):** Manually marked a resource in the state file as "tainted," signaling it should be destroyed and recreated on the next `terraform apply`. It was a two-step process (taint, then apply).
-- **`terraform apply -replace` (current approach):** Does the same thing in a single step — it forces Terraform to destroy and recreate the specified resource in the current apply operation.
+## Advanced
 
-```bash
-# Old way (deprecated)
-terraform taint azurerm_virtual_machine.web
+### Q16: How do you structure a complex multi-environment Terraform project?
+**A:** A common best practice is to separate environments into different directories (e.g., `environments/dev`, `environments/prod`), each with its own remote state file backend configuration. These root configurations then call versioned, shared modules stored in a separate `modules/` directory or a private module registry. This ensures strict isolation of state between environments.
 
-# Modern way (Terraform >= 0.15.2)
-terraform apply -replace="azurerm_virtual_machine.web"
-```
+### Q17: What is Terraform Workspaces and when should you use them?
+**A:** Workspaces allow you to manage multiple distinct state files from the same working directory and configuration files. Running `terraform workspace new dev` creates a separate state environment. While useful for local testing, they are generally discouraged for separating production from development in large teams; directory-based separation provides clearer isolation and visibility.
 
-**When to use:** When a resource is in a broken state that cannot be fixed in place (e.g., a VM whose OS is corrupted), and you need to force Terraform to rebuild it from scratch.
+### Q18: Are sensitive values encrypted in the Terraform state file?
+**A:** **No.** Terraform state stores all values, including those marked as `sensitive`, in plain text. This is a critical security consideration. To mitigate this, you must store the state file in a secure remote backend with encryption at rest (like an Azure Storage Account) and strictly limit RBAC access to the backend to only the CI/CD pipeline identity.
 
----
+### Q19: What is a dynamic block in Terraform?
+**A:** A `dynamic` block allows you to programmatically generate nested configuration blocks (like `ingress` rules in a security group) based on an iterable collection (like a list or map). It prevents you from having to hardcode repetitive blocks inside a resource definition.
 
-## Q8: Explain the `lifecycle` meta-argument and its options
-**A:** The `lifecycle` block is a special meta-argument available on all Terraform resources that controls how Terraform handles resource creation, updates, and deletion. It overrides the default plan/apply behavior.
+### Q20: How do you upgrade a major Terraform provider version safely?
+**A:** First, read the provider's upgrade guide for deprecations and breaking changes. Update the `required_providers` version constraint and run `terraform init -upgrade` to download the new plugin. Carefully review `terraform plan`; if there are unexpected changes, you may need to update your `.tf` configuration or use the `terraform state mv` command to align with syntax changes before applying.
 
-| Option | Purpose |
-|---|---|
-| `create_before_destroy` | Creates the replacement resource first before destroying the old one. Avoids downtime. |
-| `prevent_destroy` | Raises an error if a `terraform destroy` or config change would delete this resource. Protects critical resources. |
-| `ignore_changes` | Tells Terraform to ignore drift in specific attributes (e.g., tags managed externally). |
-| `replace_triggered_by` | Forces replacement of this resource when another referenced resource changes. |
+### Q21: What is the `null_resource` and the newer `terraform_data` resource?
+**A:** `null_resource` was historically used to run provisioners or orchestrate triggers without creating a physical cloud asset. In modern Terraform (1.4+), `terraform_data` replaces it as a built-in resource. It is useful for triggering actions when a variable changes or storing data that forces a lifecycle event on another resource.
 
-```hcl
-resource "azurerm_linux_virtual_machine" "web" {
-  # ... config ...
-
-  lifecycle {
-    create_before_destroy = true
-    prevent_destroy       = true
-    ignore_changes        = [tags["LastModifiedBy"]]
-  }
-}
-```
-
-> [!tip]
-> Use `prevent_destroy = true` on stateful resources like databases and storage accounts to act as a safety net against accidental `terraform destroy`. The plan will fail with a clear error message rather than silently queuing a deletion.
+### Q22: What happens if a Terraform apply fails midway?
+**A:** Terraform tracks everything it successfully created in the state file before the failure occurred. Running `terraform plan` again will compare the partially applied state with your configuration and attempt to pick up where it left off, creating the remaining resources or highlighting configuration errors.
 
 ---
 
-## Q9: How do you handle sensitive values in Terraform state?
-**A:** This is a critical concern because **Terraform state always stores sensitive values in plaintext** — even variables marked `sensitive = true`. The `sensitive` flag only prevents values from being shown in CLI output; it does not encrypt the state file.
+## Scenario-Based
 
-**Mitigations:**
-1. **Remote Backend with Encryption at Rest**: Store state in Azure Storage Account with Storage Service Encryption (SSE) enabled. Enable versioning for recovery.
-2. **Restrict Access to the State Backend**: Use Azure RBAC to allow only the service principal or Managed Identity running the pipeline to access the storage container — not individual developers.
-3. **Avoid putting secrets in state**: Instead of creating a Key Vault secret *in* Terraform (which would write the value to state), reference secrets that were created out-of-band using a `data` source.
+### Q23: Scenario: A developer manually changed a security group rule in the Azure Portal. What happens on the next `terraform plan`?
+**A:** Terraform will detect "configuration drift." During the refresh phase of the plan, it reads the real-world infrastructure and compares it against the `.tf` configuration. It will propose an update to modify the security group back to the state defined in the code, reverting the manual change.
 
-```hcl
-# GOOD: Reference an existing secret - value NOT stored in Terraform state
-data "azurerm_key_vault_secret" "db_conn" {
-  name         = "db-connection-string"
-  key_vault_id = data.azurerm_key_vault.main.id
-}
+### Q24: Scenario: Your Terraform state file lock gets stuck after a pipeline crash. How do you resolve it?
+**A:** 
+First, ensure that no other processes or pipelines are actively running Terraform. Then, obtain the lock ID from the error message. You can use the `terraform force-unlock <LOCK_ID>` command to forcefully remove the lock. In Azure Storage, you can also manually break the lock lease on the blob file via the Azure Portal or CLI.
 
-# RISKY: Creating a secret in Terraform - value IS written to state
-resource "azurerm_key_vault_secret" "db_conn" {
-  name         = "db-connection-string"
-  value        = var.db_password  # This goes into state plaintext
-  key_vault_id = azurerm_key_vault.main.id
-}
-```
+### Q25: Scenario: You need to rename a resource in your HCL code without destroying and recreating the actual cloud resource. How?
+**A:** 
+You use the `terraform state mv` command to update the address of the resource in the state file to match the new name in your code. 
+Example: `terraform state mv azurerm_resource_group.old_name azurerm_resource_group.new_name`. 
+In TF 1.1+, you can use the declarative `moved` block directly in your `.tf` files to achieve this safely within version control.
 
----
+### Q26: Scenario: Your CI/CD pipeline failed because it says a resource already exists, but it's not in your state file. What do you do?
+**A:** 
+This means the resource was created out-of-band (e.g., via the portal) but has the same name as the one Terraform is trying to create. You should run `terraform import` to pull the existing resource into your state file. Then, ensure your `.tf` configuration perfectly matches the existing resource attributes so that a subsequent `terraform plan` shows zero changes.
 
-## Q10: What are the pros and cons of Terraform modules?
-**A:** A Terraform module is a container of `.tf` files that groups related resources into a reusable, self-contained unit (e.g., a "vnet" module or an "aks-cluster" module).
+### Q27: Scenario: You want to deploy infrastructure to multiple regions simultaneously while reusing the same modules. How?
+**A:** 
+I would declare multiple provider blocks in the root configuration, setting a distinct `alias` for each (e.g., `alias = "westus"`). When invoking the modules, I would explicitly pass the aliased provider into the module block using the `providers` argument (e.g., `providers = { azurerm = azurerm.westus }`).
 
-**Pros:**
-- **Reusability**: Define infrastructure patterns once and reuse them across environments or teams.
-- **Abstraction**: Expose only necessary variables, hiding internal complexity.
-- **Consistency**: Enforces standardized resource configurations organization-wide.
-- **DRY Principle**: Eliminates copy-paste between dev/staging/prod environments.
-
-**Cons:**
-- **Complexity overhead**: Adds layers of abstraction that can make debugging harder.
-- **Versioning discipline required**: Breaking changes to a module affect all consumers — requires proper semantic versioning via a module registry.
-- **State management**: Modules don't have their own state; they share the calling root module's state, which can lead to very large state files.
-
-```hcl
-# Calling a module from Terraform Registry or local path
-module "network" {
-  source  = "Azure/network/azurerm"
-  version = "~> 5.0"
-
-  resource_group_name = azurerm_resource_group.main.name
-  address_spaces      = ["10.0.0.0/16"]
-  subnet_prefixes     = ["10.0.1.0/24", "10.0.2.0/24"]
-}
-```
-
----
-
-## Q11: What is the difference between `count` and `for_each`?
-**A:** Both are meta-arguments used to create multiple instances of a resource, but they behave differently and have different use cases.
-
-| Feature | `count` | `for_each` |
-|---|---|---|
-| **Index type** | Integer index (0, 1, 2...) | Map key or set element (string) |
-| **State address** | `azurerm_rg.main[0]` | `azurerm_rg.main["dev"]` |
-| **Sensitivity to changes** | Deleting item `[0]` shifts all subsequent indexes, causing unnecessary re-creates | Deleting `"dev"` only affects that specific instance |
-| **Use case** | Identical resources where order doesn't matter | Resources with distinct identities (names, environments) |
-| **Input type** | Number | `map` or `set` |
-
-```hcl
-# count - creates 3 identical VMs, but removing one causes index shifts
-resource "azurerm_resource_group" "rg" {
-  count    = 3
-  name     = "rg-${count.index}"
-  location = "East US"
-}
-
-# for_each - each RG is tracked by a stable key, safe to add/remove
-resource "azurerm_resource_group" "rg" {
-  for_each = toset(["dev", "staging", "prod"])
-  name     = "rg-${each.key}"
-  location = "East US"
-}
-```
-
-> [!important]
-> Prefer **`for_each`** over `count` in almost all cases when creating named resources. The stable key-based addressing prevents destructive plan diffs when the list changes. Only use `count` for simple toggles (e.g., `count = var.create_resource ? 1 : 0`).
-
----
-
-## Related Notes
-- [[Azure]] — Azure platform concepts
-- [[CI-CD]] — Running Terraform in pipelines
-- [[Security]] — Securing Terraform state and secrets
+### Q28: Scenario: The state file was accidentally deleted from the remote backend. How do you recover?
+**A:** 
+First, I would attempt to recover the state file from the remote backend's backup or versioning system (e.g., Blob Storage versioning). If versions are not enabled, recovery is highly manual. I would need to write matching configuration code and run `terraform import` for every single deployed resource to rebuild the state file from scratch. This highlights the absolute necessity of enabling versioning on state storage containers.

@@ -1,196 +1,149 @@
 ---
 tags: [interview, prep, azure, questions]
 source: devopsinsiders/batch-18
-created: 2026-06-08
-updated: 2026-06-14
+updated: 2026-07-26
 ---
 
 # Azure Interview Questions
 
-A collection of common interview questions regarding Azure core concepts and administration.
+A collection of comprehensive interview questions regarding Azure core concepts and administration, ranging from basics to scenario-based.
 
 ---
 
-## Q1: What is the difference between Authentication and Authorization in Azure?
+## Basics
+
+### Q1: What is Microsoft Azure and how does it differ from on-premises datacenters?
+**A:** Azure is Microsoft's public cloud computing platform providing services like IaaS, PaaS, and SaaS over the internet. Unlike on-premises datacenters where you manage physical hardware, networking, and power, Azure operates on a pay-as-you-go model. This allows organizations to scale rapidly, reduce capital expenditure (CapEx) in favor of operational expenditure (OpEx), and shift the responsibility of physical infrastructure maintenance to Microsoft.
+
+### Q2: What are the main differences between IaaS, PaaS, and SaaS?
 **A:** 
-- **Authentication** is the process of proving who you are (Identity). In Azure, this is handled by Microsoft Entra ID (formerly Azure AD) checking your username, password, and MFA. It's the "key to the front door."
-- **Authorization** is the process of determining what you are allowed to do once you are inside. This is handled by Azure Role-Based Access Control (RBAC), which checks if your account has the "Contributor" or "Reader" role on a specific resource.
+- **IaaS (Infrastructure as a Service):** You rent IT infrastructure like VMs and networks. You manage the OS, runtime, and application (e.g., Azure Virtual Machines).
+- **PaaS (Platform as a Service):** Provides a managed hosting environment. The cloud provider manages the OS and runtime, allowing developers to focus solely on deploying code (e.g., Azure App Service, Azure SQL Database).
+- **SaaS (Software as a Service):** Fully managed applications hosted by the provider and accessed via the internet (e.g., Microsoft 365, GitHub).
 
----
+### Q3: What is a Resource Group in Azure?
+**A:** A Resource Group is a logical container that holds related resources for an Azure solution. It helps in organizing, managing, and monitoring resources as a single entity based on lifecycle or application. For example, you can deploy, update, or delete all resources for a web app in a single coordinated operation. Resources in a resource group can be located in different regions.
 
-## Q2: How is an Entra ID Global Administrator different from an Azure Subscription Owner?
+### Q4: Can an Azure resource exist in multiple Resource Groups?
+**A:** No. An individual resource can only reside in exactly one Resource Group at a time. However, it can communicate and be linked with resources located in other Resource Groups. You can also move resources between Resource Groups if needed.
+
+### Q5: What is the difference between Authentication and Authorization in Azure?
 **A:** 
-- A **Global Administrator** has full control over the Entra ID tenant (managing users, groups, and tenant-level policies). However, they do *not* automatically have access to any Azure resources (like VMs or VNets).
-- A **Subscription Owner** has full control over all Azure resources within a specific subscription and can assign Azure roles to other users for those resources. They cannot manage Entra ID users unless they also have a role like User Administrator in Entra ID.
+- **Authentication** proves who you are (Identity). In Azure, this is handled by Microsoft Entra ID (formerly Azure AD) which checks your credentials and MFA. It acts as the "key to the front door."
+- **Authorization** determines what you are allowed to do once authenticated. In Azure, this is handled by Azure Role-Based Access Control (RBAC), which verifies if your account has roles like "Contributor" or "Reader" on a specific resource.
+
+### Q6: How does Azure manage geographical redundancy and latency?
+**A:** Azure organizes its datacenters into Regions (e.g., East US, West Europe). Each region is paired with another region within the same geography (Regional Pairs) for disaster recovery. Furthermore, regions have Availability Zones, which are physically separate datacenters with independent power, cooling, and networking to provide high availability within the region.
+
+### Q7: What are Azure Subscriptions and Management Groups?
+**A:** 
+- An **Azure Subscription** is a logical container used to provision resources and serves as a boundary for billing and access control.
+- **Management Groups** sit above subscriptions and allow you to manage access, policy, and compliance across multiple subscriptions. This hierarchical structure is essential for enterprise governance.
 
 ---
 
-## Q3: What is a Managed Identity and why should we use it?
-**A:** A Managed Identity is a feature of Entra ID that provides Azure services (like a VM or Web App) with an automatically managed identity. You should use it to eliminate the need for developers to manage credentials (like connection strings or API keys). Instead of hardcoding a password to connect a VM to a Key Vault, you grant the VM's Managed Identity RBAC access to the Key Vault.
+## Intermediate
 
-> [!tip] System-Assigned vs User-Assigned
-> **System-Assigned**: tied to a single resource lifecycle — deleted when the resource is deleted.  
-> **User-Assigned**: standalone identity that can be shared across multiple resources and persists independently.
-
----
-
-## Q4: Can a resource exist in multiple Resource Groups?
-**A:** No. A resource can only reside in exactly one Resource Group at a time. However, it can communicate with resources in other Resource Groups.
-
----
-
-## Q5: Explain the difference between LRS, ZRS, and GRS in Azure Storage.
+### Q8: Explain the difference between LRS, ZRS, and GRS in Azure Storage.
 **A:**
-- **LRS (Locally Redundant Storage):** Synchronously copies data 3 times within a single physical location (server rack). Protects against hardware failure but not a datacenter going down.
-- **ZRS (Zone-Redundant Storage):** Synchronously copies data across 3 separate Availability Zones within a region. Protects against a datacenter failure.
-- **GRS (Geo-Redundant Storage):** Copies data synchronously 3 times within a single location using LRS, then asynchronously copies it to a secondary region hundreds of miles away. Protects against regional disasters.
+- **LRS (Locally Redundant Storage):** Synchronously copies data 3 times within a single physical location. Protects against hardware failure but not a datacenter outage.
+- **ZRS (Zone-Redundant Storage):** Synchronously copies data across 3 separate Availability Zones within a region. Protects against a complete datacenter failure.
+- **GRS (Geo-Redundant Storage):** Copies data synchronously 3 times via LRS, then asynchronously copies it to a paired secondary region hundreds of miles away. It protects against massive regional disasters.
 
----
-
-## Q6: Explain Azure Availability Zones vs Availability Sets
+### Q9: Explain Azure Availability Zones vs Availability Sets.
 **A:**
+- **Availability Sets:** Protect VMs against rack-level hardware failure or planned maintenance by distributing them across different fault and update domains within a single datacenter. Offers a 99.95% SLA.
+- **Availability Zones:** Protect VMs against entire datacenter failures by placing them in separate physical datacenters within a region. This is the modern standard, offering a 99.99% SLA.
 
-| Feature | Availability Zones | Availability Sets |
-|---|---|---|
-| **Scope** | Separate physical datacenters within a region | Separate fault/update domains within one datacenter |
-| **Protection against** | Datacenter-level failure | Rack-level hardware failure or planned maintenance |
-| **SLA** | 99.99% VM uptime | 99.95% VM uptime |
-| **Use case** | Zone-redundant, modern workloads | Legacy workloads that can't be zone-aware |
-
-> [!important]
-> Availability Zones are the **modern standard**. Availability Sets are an older construct and are generally recommended only when Zone support is unavailable for a specific VM SKU or region. In AKS, you configure zone distribution at the node pool level.
-
----
-
-## Q7: What is the difference between Azure Firewall and NSG?
+### Q10: What is the difference between Azure Firewall and NSG?
 **A:**
+- **NSG (Network Security Group):** Operates at Layer 4 (TCP/UDP) and is applied to a NIC or Subnet for micro-segmentation. It is free and lacks advanced inspection.
+- **Azure Firewall:** A managed, centralized service operating at Layer 4 and Layer 7. It provides features like FQDN filtering, threat intelligence, and centralized north-south traffic control. It incurs hourly and data processing costs.
 
-| Feature | NSG (Network Security Group) | Azure Firewall |
-|---|---|---|
-| **Layer** | Layer 4 (TCP/UDP ports and IPs) | Layer 4 + Layer 7 (FQDNs, URLs, TLS inspection) |
-| **Scope** | Applied to a NIC or Subnet | Centralized, deployed in a dedicated subnet |
-| **FQDN filtering** | No | Yes (can allow `*.microsoft.com`) |
-| **Threat Intelligence** | No | Yes (blocks known malicious IPs) |
-| **Cost** | Free | ~$1.25/hr + data processing costs |
-| **Management** | Per-resource rules | Centralized via Firewall Policy |
-
-> [!note] When to use which
-> Use **NSGs** for micro-segmentation between subnets (east-west traffic control). Use **Azure Firewall** for centralized north-south traffic control (internet ingress/egress), FQDN filtering, and threat intelligence. In a production hub-spoke topology, you typically use **both** together.
-
-```
-Internet --> Azure Firewall (hub VNet) --> NSG rules --> Application Subnet
-```
-
----
-
-## Q8: When would you use Private Endpoints vs Service Endpoints?
+### Q11: What is Azure Policy and how is it different from RBAC?
 **A:**
+- **RBAC:** Controls *who* can perform *what actions* (e.g., "User X can restart VM Y"). It focuses on identity permissions.
+- **Azure Policy:** Controls *what resources* can exist and their properties (e.g., "All storage accounts must enforce HTTPS"). It focuses on resource compliance and governance, capable of denying non-compliant resource creation or automatically remediating them.
 
-| Feature | Service Endpoint | Private Endpoint |
-|---|---|---|
-| **Traffic path** | Optimized public path (still uses public IP of service) | Fully private via a private IP in your VNet |
-| **Network exposure** | Service still has a public IP | Service is completely off the public internet |
-| **DNS** | No change needed | Requires Private DNS Zone to resolve to private IP |
-| **Cost** | Free | ~$0.01/hr + data transfer |
-| **Use case** | Quick, low-cost private access for trusted subnets | Regulatory compliance, zero public exposure required |
-
-> [!warning]
-> **Service Endpoints** do not make the service private — they only restrict *which* VNet can reach the public endpoint. A **Private Endpoint** actually assigns a private IP (e.g., `10.0.1.5`) inside your VNet, making it completely isolated from the public internet. For PCI-DSS, HIPAA, or any compliance-sensitive workload, always prefer **Private Endpoints**.
-
----
-
-## Q9: What is Azure Policy and how is it different from RBAC?
+### Q12: How does Azure Front Door differ from Azure Application Gateway?
 **A:**
-- **RBAC (Role-Based Access Control)** controls *what actions* a user or identity **can do** (e.g., "can this person create a VM?"). It is about **permissions on identities**.
-- **Azure Policy** controls *what resources* **can exist** (e.g., "all storage accounts in this subscription MUST use HTTPS only and MUST be in East US"). It is about **compliance enforcement on resources**.
+- **Application Gateway:** A regional, Layer 7 load balancer designed for web traffic within a single region. It provides URL path routing and a regional WAF.
+- **Front Door:** A global, Layer 7 load balancer and CDN. It routes client traffic to the nearest healthy region, offering global failover, caching, and edge-level WAF protection against DDoS attacks before traffic enters your VNet.
 
-**Key Azure Policy effects:**
+### Q13: What is an Azure Managed Identity?
+**A:** A Managed Identity is a feature of Entra ID that gives Azure services (like VMs, App Services) an automatically managed identity. It eliminates the need for developers to manage credentials or connection strings. For example, a VM can securely authenticate to an Azure Key Vault using its Managed Identity, verified entirely by Azure via RBAC.
 
-| Effect | Behavior |
-|---|---|
-| `Deny` | Blocks the resource creation/update if it violates the rule |
-| `Audit` | Allows the action but flags it as non-compliant in the compliance report |
-| `Append` | Adds additional fields to the resource (e.g., tags) |
-| `DeployIfNotExists` | Deploys a remediation resource if the condition is not met |
-
-> [!tip]
-> Group related policies into a **Policy Initiative (Policy Set)** for easier assignment. Use `Audit` mode first when rolling out new policies to understand impact before switching to `Deny`.
-
----
-
-## Q10: Explain the AKS Networking Models (kubenet vs Azure CNI)
+### Q14: System-Assigned vs User-Assigned Managed Identity.
 **A:**
+- **System-Assigned:** Tied directly to a single resource's lifecycle. If the resource is deleted, the identity is automatically deleted.
+- **User-Assigned:** A standalone Azure resource that can be assigned to one or multiple resources. It persists independently of the resources using it, making it ideal for shared access scenarios.
 
-| Feature | kubenet | Azure CNI |
-|---|---|---|
-| **IP allocation** | Pods get IPs from a private overlay network, NAT'd to node IP | Each Pod gets a real IP from the VNet subnet |
-| **VNet integration** | Indirect (only nodes have VNet IPs) | Direct (pods are first-class VNet citizens) |
-| **IP consumption** | Low (efficient) | High (need to pre-allocate IPs for max pod count) |
-| **Network Policy** | Calico only | Calico or Azure Network Policy |
-| **Windows node pools** | Not supported | Supported |
-| **Use case** | Dev/test, large clusters needing IP efficiency | Production, service integration with other VNet resources |
-
-> [!important] Azure CNI Overlay (modern choice)
-> Azure CNI Overlay is the recommended modern option — it assigns pods IPs from a private CIDR (not consuming VNet space) while still allowing direct VNet-level connectivity. It combines the IP efficiency of kubenet with the capabilities of Azure CNI.
-
-```bash
-# Create AKS cluster with Azure CNI Overlay
-az aks create \
-  --resource-group myRG \
-  --name myAKS \
-  --network-plugin azure \
-  --network-plugin-mode overlay \
-  --pod-cidr 192.168.0.0/16
-```
+### Q15: What is Azure ExpressRoute?
+**A:** Azure ExpressRoute provides a private, dedicated connection between your on-premises infrastructure and Azure datacenters via a connectivity provider. It does not go over the public internet. This ensures higher security, more reliability, consistent latencies, and often higher speeds than typical VPN connections.
 
 ---
 
-## Q11: What is Entra ID Conditional Access and PIM?
+## Advanced
+
+### Q16: When would you use Private Endpoints vs Service Endpoints?
 **A:**
+- **Service Endpoints:** Optimize routing to Azure PaaS services over the Azure backbone network. However, the service still retains a public IP, though access is restricted to your VNet.
+- **Private Endpoints:** Use Azure Private Link to assign a private IP from your VNet to a PaaS service (like SQL or Storage). This completely removes the public IP footprint of the service, making it accessible only internally. Essential for strict compliance (e.g., PCI-DSS).
 
-**Conditional Access** is a policy engine in Entra ID that evaluates signals (user, device, location, app, risk) and enforces access controls. It operates as an "if-then" policy:
-
-```
-IF user is accessing Azure Portal
-AND sign-in risk is High
-THEN require MFA + compliant device
-```
-
-Common signals: User/Group, IP location, Device compliance (Intune), Application, Sign-in risk score.
-
-**Privileged Identity Management (PIM)** provides **Just-In-Time (JIT)** privileged access:
-- Users are **eligible** for high-privilege roles (e.g., Global Admin, Subscription Owner) but do **not** hold them permanently.
-- When needed, they **activate** the role for a limited time window (e.g., 1-8 hours) with a justification and optional MFA/approval.
-- All activations are **audited**.
-
-> [!important]
-> The combination of Conditional Access + PIM is a core **Zero Trust** control. No account should have permanent standing privileges. PIM enforces this at the identity layer while Conditional Access enforces contextual access controls.
-
----
-
-## Q12: How does Azure Front Door differ from Azure Application Gateway?
+### Q17: Explain the AKS Networking Models: kubenet vs Azure CNI.
 **A:**
+- **kubenet:** Pods receive IPs from a logically distinct overlay network and are NAT'd behind the node's IP to access the VNet. It is highly IP efficient but integrates less cleanly with VNet resources.
+- **Azure CNI:** Every Pod gets a real IP from the VNet subnet, making them first-class citizens on the network. It requires careful subnet sizing since it consumes many IPs.
+*Note:* Azure CNI Overlay is a modern hybrid that offers the IP efficiency of kubenet with the performance and feature set of Azure CNI.
 
-| Feature | Azure Application Gateway | Azure Front Door |
-|---|---|---|
-| **Scope** | Regional load balancer (one region) | Global load balancer (multi-region) |
-| **Layer** | Layer 7 (HTTP/HTTPS) | Layer 7 + global anycast |
-| **WAF** | Yes (WAF v2) | Yes (WAF Policy) |
-| **SSL Termination** | Yes | Yes |
-| **URL path routing** | Yes | Yes |
-| **Global failover** | No | Yes (routes to nearest healthy origin) |
-| **CDN / Caching** | No | Yes |
-| **Private backend** | Yes (via Private Link) | Yes (Premium SKU via Private Link) |
-| **Use case** | Single-region app with WAF | Multi-region app, global CDN, geo-routing |
+### Q18: What are Entra ID Conditional Access and Privileged Identity Management (PIM)?
+**A:**
+- **Conditional Access:** An Entra ID policy engine evaluating signals (user, location, device compliance, risk score) to enforce access controls like requiring MFA.
+- **PIM:** Provides Just-In-Time (JIT) role activation. Users are eligible for admin roles but must actively request them for a limited time (e.g., 2 hours), usually requiring justification and MFA. This drastically reduces the attack surface of standing privileges.
 
-> [!note] Decision guide
-> - Single-region microservices on AKS/VMs → **Application Gateway** (often as the AKS ingress controller via AGIC).
-> - Multi-region SaaS application requiring global load balancing and CDN → **Azure Front Door**.
-> - For maximum security, Front Door Premium + WAF Policy blocks attacks at the **edge** before traffic even reaches your region.
+### Q19: How do you achieve cross-region VNet connectivity?
+**A:** You use Global VNet Peering. It securely connects VNets in different Azure regions over the Microsoft backbone infrastructure. Once peered, resources in either VNet can communicate using private IP addresses as if they were in the same network, without requiring VPN gateways.
+
+### Q20: Describe Azure Key Vault and how it secures secrets.
+**A:** Azure Key Vault is a centralized cloud service for securely storing and accessing secrets, encryption keys, and certificates. Access is strictly controlled via Entra ID RBAC or Access Policies. It supports network restrictions (Firewalls/Private Endpoints) and ensures that sensitive strings (like DB connection strings) are never hardcoded in configuration files or code.
+
+### Q21: What is the difference between Azure Monitor, Log Analytics, and Application Insights?
+**A:**
+- **Azure Monitor:** The overarching service for collecting, analyzing, and acting on telemetry data from cloud and on-premises environments.
+- **Log Analytics:** A workspace within Azure Monitor where logs are aggregated and queried using Kusto Query Language (KQL).
+- **Application Insights:** A feature of Azure Monitor focused on Application Performance Management (APM). It instruments your code to provide deep insights into application errors, performance bottlenecks, and usage.
+
+### Q22: What are Azure Virtual Machine Scale Sets (VMSS)?
+**A:** VMSS allow you to create and manage a group of load-balanced VMs. The number of VM instances can automatically increase or decrease in response to demand or a defined schedule. This provides high availability and fault tolerance for applications, natively integrating with Azure Load Balancer or Application Gateway.
 
 ---
 
-## Related Notes
-- [[Security]] — Azure security controls and NSG deep dive
-- [[AKS]] — Kubernetes on Azure architecture
-- [[Networking]] — VNet, peering, and DNS concepts
+## Scenario-Based
+
+### Q23: Scenario: An Azure Web App cannot connect to an Azure SQL Database. How do you troubleshoot?
+**A:** 
+First, I would verify the network configuration. If the Web App uses VNet Integration, I'd check the NSGs on the delegated subnet and the SQL database firewall rules. Next, I would confirm if Private Endpoints are in use and verify that DNS resolution within the VNet correctly resolves the SQL server's Private IP. Finally, I'd check authentication, ensuring the Web App's Managed Identity or connection string is correct and has the necessary RBAC/SQL permissions.
+
+### Q24: Scenario: Your organization requires that developers cannot spin up expensive VMs (like GPU instances). How do you enforce this?
+**A:** 
+I would implement an **Azure Policy** and assign it at the Management Group or Subscription level. The policy would be defined to "Allowed virtual machine size SKUs" and list only the cost-effective VM sizes (like the B-series or standard D-series). Any attempt to deploy a non-compliant VM size would be blocked by the `Deny` effect, ensuring proactive cost control without removing the developers' Contributor access.
+
+### Q25: Scenario: You need to migrate an on-premises web application to Azure with minimal downtime. What approach do you take?
+**A:** 
+For the database, I would use Azure Database Migration Service (DMS) to continuously replicate data to Azure SQL, ensuring the data is synced. For the application layer, I would use Azure Migrate or Azure Site Recovery to lift-and-shift the VMs, or containerize the application and deploy it to AKS or App Service. On cutover day, I'd update DNS records (or Azure Front Door routing) to point to the new Azure environment and perform a final data sync.
+
+### Q26: Scenario: How would you design a highly available, secure 3-tier architecture in Azure?
+**A:** 
+I would deploy resources across multiple Availability Zones. 
+- **Web Tier:** Placed in a subnet behind an Application Gateway (with WAF) to distribute incoming HTTP/HTTPS traffic.
+- **App Tier:** VMs in a Virtual Machine Scale Set or AKS nodes in a separate subnet.
+- **Data Tier:** Azure SQL Database with Zone-Redundant HA and a Private Endpoint. 
+I would secure the traffic between tiers using NSGs, allowing the App tier to only accept traffic from the Web tier, and the Data tier to only accept traffic from the App tier.
+
+### Q27: Scenario: An AKS pod cannot reach the internet to download updates. What could be the issue?
+**A:** 
+This is likely a networking or egress configuration issue. If the cluster uses a custom VNet, I would check if a Route Table is attached to the AKS subnet forcing traffic (0.0.0.0/0) to a firewall or NVA. If so, I'd verify the firewall rules allow outbound traffic on port 443. I would also check if the cluster was created with `outboundType: userDefinedRouting` and verify the NAT Gateway or standard Load Balancer configurations.
+
+### Q28: Scenario: You need to grant a contractor temporary administrative access to an Azure subscription. How do you do it securely?
+**A:** 
+I would use Entra ID Privileged Identity Management (PIM). I would invite the contractor as an external guest user and assign them the specific administrative role as "Eligible" with a strict expiration date. When they need to perform a task, they must activate the role via PIM, provide a justification, and pass an MFA prompt. Their access will automatically expire after a few hours, leaving zero standing privileges.

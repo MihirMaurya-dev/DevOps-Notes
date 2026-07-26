@@ -35,10 +35,10 @@ A **Data Source**, on the other hand, is like going to a **library** 📚 to **l
 
 ### The Read vs. Write Distinction
 
-| Concept | HCL Block Used | What It Does | Terraform Manages It? |
-|---|---|---|---|
-| **Resource** | `resource "..."` | Creates/Updates/Destroys cloud things | ✅ Yes |
-| **Data Source** | `data "..."` | Reads existing cloud things | ❌ No |
+| Concept         | HCL Block Used   | What It Does                          | Terraform Manages It? |
+| --------------- | ---------------- | ------------------------------------- | --------------------- |
+| **Resource**    | `resource "..."` | Creates/Updates/Destroys cloud things | ✅ Yes                 |
+| **Data Source** | `data "..."`     | Reads existing cloud things           | ❌ No                  |
 
 This is one of the most important distinctions in Terraform. Resources are "write" operations. Data sources are "read-only" operations.
 

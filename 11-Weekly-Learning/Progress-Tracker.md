@@ -10,17 +10,17 @@ updated: 2026-06-14
 This document tracks the progress through the DevOps Insiders Batch 18 curriculum.
 
 ## Phase 1: Linux & Fundamentals
-- [x] OS Architecture (Kernel vs User Space)
-- [x] File System Hierarchy (FHS)
-- [x] Core Navigation & File Commands
-- [x] Text Processing (Grep, Awk, Sed)
-- [x] Users, Groups, and Permissions (chmod, chown)
-- [x] Networking Basics (SSH, Keys, Ports)
-- [x] Network Troubleshooting (curl, ping, ss)
-- [x] Package Management (apt)
-- [x] Services and Daemons (systemd, journalctl)
-- [x] Task Scheduling (cron)
-- [x] Bash Scripting (Variables, Logic, Strict Mode)
+- [ ] OS Architecture (Kernel vs User Space)
+- [ ] File System Hierarchy (FHS)
+- [ ] Core Navigation & File Commands
+- [ ] Text Processing (Grep, Awk, Sed)
+- [ ] Users, Groups, and Permissions (chmod, chown)
+- [ ] Networking Basics (SSH, Keys, Ports)
+- [ ] Network Troubleshooting (curl, ping, ss)
+- [ ] Package Management (apt)
+- [ ] Services and Daemons (systemd, journalctl)
+- [ ] Task Scheduling (cron)
+- [ ] Bash Scripting (Variables, Logic, Strict Mode)
 
 ## Phase 2: Cloud Fundamentals (Azure)
 - [x] Cloud Models vs On-Premises
