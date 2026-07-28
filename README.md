@@ -31,21 +31,23 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 ## 📚 Table of Contents
 
-| # | Section | Description | Notes |
-|---|---------|-------------|-------|
-| 🏗️ | [01 — Terraform](#-01--terraform) | IaC from zero to advanced | HCL, State, Modules, Workspaces |
-| ☁️ | [02 — Azure](#️-02--azure) | Core Azure services & networking | AKS, VNet, RBAC, Key Vault |
-| 🏢 | [03 — Landing Zone](#-03--landing-zone) | Azure Landing Zone & CAF | Enterprise-Scale, Governance |
-| 🔄 | [04 — CI/CD](#-04--cicd) | Pipelines & GitOps automation | Azure DevOps, GitHub Actions |
-| 🐧 | [05 — Linux](#-05--linux) | Linux mastery for DevOps | Commands, Bash, Networking |
-| 🏛️ | [06 — Architecture Patterns](#️-06--architecture-patterns) | Enterprise design patterns | Hub-Spoke, Zero-Trust, DR |
-| 🎯 | [07 — Interview Prep](#-07--interview-prep) | Curated Q&A by domain | Scenario-based, Security |
-| 🔨 | [08 — Real-World Projects](#-08--real-world-projects) | Full project implementations | AKS Platform, Secure Hub-Spoke |
-| 📋 | [09 — Decision Logs](#-09--decision-logs) | Architecture Decision Records | ADRs with rationale |
-| 🗺️ | [10 — CAF Mapping](#️-10--caf-mapping) | Cloud Adoption Framework map | Workloads ↔ CAF pillars |
-| 📅 | [11 — Weekly Learning](#-11--weekly-learning) | Progress tracker & goals | Weekly reviews |
-| 🤖 | [12 — Agentic AI](#-12--agentic-ai) | AI in DevOps engineering | Tool calling, automation |
-| 🔐 | [14 — Security Scanning](#-14--security-scanning) | IaC & secrets security scanning | TFLint, tfsec, Checkov, Gitleaks |
+| #   | Section                            | Description                      | Notes                                |
+| --- | ---------------------------------- | -------------------------------- | ------------------------------------ |
+| 🏗️ | [01 — Terraform](#-01--terraform)             | IaC from zero to advanced        | HCL, State, Modules, Workspaces      |
+| ☁️  | [02 — Azure](#-02--azure)                 | Core Azure services & networking | AKS, VNet, RBAC, Key Vault           |
+| 🏢  | [03 — Landing Zone](#-03--landing-zone)          | Azure Landing Zone & CAF         | Enterprise-Scale, Governance         |
+| 🔄  | [04 — CI/CD](#-04--cicd)                 | Pipelines & GitOps automation    | Azure DevOps, GitHub Actions         |
+| 🐧  | [05 — Linux](#-05--linux)                 | Linux mastery for DevOps         | Commands, Bash, Networking           |
+| 🏛️ | [06 — Architecture Patterns](#-06--architecture-patterns) | Enterprise design patterns       | Hub-Spoke, Zero-Trust, DR            |
+| 🎯  | [07 — Interview Prep](#-07--interview-prep)        | Curated Q&A by domain            | Scenario-based, Security             |
+| 🔨  | [08 — Real-World Projects](#-08--real-world-projects)   | Full project implementations     | AKS Platform, Secure Hub-Spoke       |
+| 📋  | [09 — Decision Logs](#-09--decision-logs)         | Architecture Decision Records    | ADRs with rationale                  |
+| 🗺️ | [10 — CAF Mapping](#-10--caf-mapping)           | Cloud Adoption Framework map     | Workloads ↔ CAF pillars              |
+| 📅  | [11 — Weekly Learning](#-11--weekly-learning)       | Progress tracker & goals         | Weekly reviews                       |
+| 🤖  | [12 — Agentic AI](#-12--agentic-ai)            | AI in DevOps engineering         | Tool calling, automation             |
+| 🌿  | [13 — Git](#-13--git)                   | Git & platform workflows         | GitHub, Azure Repos, PR, Code Review |
+| 🔐  | [14 — Security Scanning](#-14--security-scanning)     | IaC & secrets security scanning  | TFLint, tfsec, Checkov, Gitleaks     |
+| 💰  | [15 — Cost & Governance](#-15--cost--governance)     | Cost management & governance     | Tagging, Naming, RBAC, OpenCost      |
 
 ---
 
@@ -53,25 +55,46 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 > Infrastructure as Code fundamentals through advanced enterprise patterns using HashiCorp Terraform.
 
-| Topic                   | File                                  | Description                           |
-| ----------------------- | ------------------------------------- | ------------------------------------- |
-| 📖 Introduction         | [`01-Terraform/01-Introduction.md`](01-Terraform/01-Introduction.md)        | What is Terraform, why IaC            |
-| ⚙️ Installation         | [`01-Terraform/02-Installation.md`](01-Terraform/02-Installation.md)        | Install, configure, tfenv             |
-| 🔌 Providers            | [`01-Terraform/03-Providers.md`](01-Terraform/03-Providers.md)           | AzureRM, version locking              |
-| 🧱 Resources            | [`01-Terraform/04-Resources.md`](01-Terraform/04-Resources.md)           | Resource blocks, meta-args            |
-| 📥 Variables            | [`01-Terraform/05-Variables.md`](01-Terraform/05-Variables.md)           | Input vars, tfvars, env vars          |
-| 🔧 Locals               | [`01-Terraform/06-Locals.md`](01-Terraform/06-Locals.md)              | Local values, expressions             |
-| 📤 Outputs              | [`01-Terraform/07-Outputs.md`](01-Terraform/07-Outputs.md)             | Output blocks, sensitive values       |
-| 💾 State Management     | [`01-Terraform/08-State-Management.md`](01-Terraform/08-State-Management.md)    | State file, locking, drift            |
-| 🌐 Remote Backend       | [`01-Terraform/09-Remote-Backend.md`](01-Terraform/09-Remote-Backend.md)      | Azure Blob, state locking             |
-| 📦 Modules              | [`01-Terraform/10-Modules.md`](01-Terraform/10-Modules.md)             | Module structure, registry            |
-| 🌍 Workspaces           | [`01-Terraform/11-Workspaces.md`](01-Terraform/11-Workspaces.md)          | Multi-env with workspaces             |
-| 🔍 Data Sources         | [`01-Terraform/12-Data-Sources.md`](01-Terraform/12-Data-Sources.md)        | Querying existing resources           |
-| 🔁 Loops & Conditionals | [`01-Terraform/13-Loops-Conditionals.md`](01-Terraform/13-Loops-Conditionals.md)  | count, for_each, dynamic              |
-| ♻️ Lifecycle            | [`01-Terraform/14-Lifecycle.md`](01-Terraform/14-Lifecycle.md)           | create_before_destroy, ignore_changes |
-| ⭐ Best Practices        | [`01-Terraform/15-Best-Practices.md`](01-Terraform/15-Best-Practices.md)      | Naming, structure, security           |
-| 📝 Cheat Sheet          | [`01-Terraform/Cheat-Sheet.md`](01-Terraform/Cheat-Sheet.md)         | Quick command reference               |
-| ❓ Interview Questions   | [`01-Terraform/Interview-Questions.md`](01-Terraform/Interview-Questions.md) | Top interview Q&A                     |
+### Fundamentals
+| Topic                        | File                                                                                                                             | Description                    |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 📖 Declarative vs Imperative | [`01-Terraform/00-IaC-Fundamentals/Declarative-vs-Imperative.md`](01-Terraform/00-IaC-Fundamentals/Declarative-vs-Imperative.md) | IaC approaches explained       |
+| 📖 State Theory              | [`01-Terraform/00-IaC-Fundamentals/State-Theory.md`](01-Terraform/00-IaC-Fundamentals/State-Theory.md)                           | Deep dive into Terraform state |
+
+### Core Topics
+| Topic | File | Description |
+|-------|------|-------------|
+| 📖 Introduction | [`01-Terraform/01-Introduction.md`](01-Terraform/01-Introduction.md) | What is Terraform, why IaC |
+| ⚙️ Installation | [`01-Terraform/02-Installation.md`](01-Terraform/02-Installation.md) | Install, configure, tfenv |
+| 🔌 Providers | [`01-Terraform/03-Providers.md`](01-Terraform/03-Providers.md) | AzureRM, version locking |
+| 🧱 Resources | [`01-Terraform/04-Resources.md`](01-Terraform/04-Resources.md) | Resource blocks, meta-args |
+| 📥 Variables | [`01-Terraform/05-Variables.md`](01-Terraform/05-Variables.md) | Input vars, tfvars, env vars |
+| 🔧 Locals | [`01-Terraform/06-Locals.md`](01-Terraform/06-Locals.md) | Local values, expressions |
+| 📤 Outputs | [`01-Terraform/07-Outputs.md`](01-Terraform/07-Outputs.md) | Output blocks, sensitive values |
+| 💾 State Management | [`01-Terraform/08-State-Management.md`](01-Terraform/08-State-Management.md) | State file, locking, drift |
+| 🌐 Remote Backend | [`01-Terraform/09-Remote-Backend.md`](01-Terraform/09-Remote-Backend.md) | Azure Blob, state locking, env-wise state |
+| 📦 Modules | [`01-Terraform/10-Modules.md`](01-Terraform/10-Modules.md) | Module structure, registry |
+| 🌍 Workspaces | [`01-Terraform/11-Workspaces.md`](01-Terraform/11-Workspaces.md) | Multi-env with workspaces |
+| 🔍 Data Sources | [`01-Terraform/12-Data-Sources.md`](01-Terraform/12-Data-Sources.md) | Querying existing resources |
+| 🔁 Loops & Conditionals | [`01-Terraform/13-Loops-Conditionals.md`](01-Terraform/13-Loops-Conditionals.md) | count, for_each, dynamic |
+| ♻️ Lifecycle | [`01-Terraform/14-Lifecycle.md`](01-Terraform/14-Lifecycle.md) | create_before_destroy, ignore_changes |
+| ⭐ Best Practices | [`01-Terraform/15-Best-Practices.md`](01-Terraform/15-Best-Practices.md) | Naming, structure, security |
+| 📝 Cheat Sheet | [`01-Terraform/Cheat-Sheet.md`](01-Terraform/Cheat-Sheet.md) | Quick command reference |
+| ❓ Interview Questions | [`01-Terraform/Interview-Questions.md`](01-Terraform/Interview-Questions.md) | Top interview Q&A |
+
+### Resource Library
+| Resource | File | Description |
+|----------|------|-------------|
+| 📋 README | [`01-Terraform/Resource-Library/README.md`](01-Terraform/Resource-Library/README.md) | Library index |
+| ☸️ AKS | [`01-Terraform/Resource-Library/AKS.md`](01-Terraform/Resource-Library/AKS.md) | AKS Terraform snippets |
+| 🔑 Key Vault | [`01-Terraform/Resource-Library/Key-Vault.md`](01-Terraform/Resource-Library/Key-Vault.md) | Key Vault resource blocks |
+| 📊 Log Analytics | [`01-Terraform/Resource-Library/Log-Analytics.md`](01-Terraform/Resource-Library/Log-Analytics.md) | Log Analytics workspace |
+| 🛡️ NSG | [`01-Terraform/Resource-Library/NSG.md`](01-Terraform/Resource-Library/NSG.md) | NSG + rules resource blocks |
+| 📁 Resource Group | [`01-Terraform/Resource-Library/Resource-Group.md`](01-Terraform/Resource-Library/Resource-Group.md) | Resource Group patterns |
+| 💾 Storage Account | [`01-Terraform/Resource-Library/Storage-Account.md`](01-Terraform/Resource-Library/Storage-Account.md) | Storage Account resource |
+| 🔀 Subnet | [`01-Terraform/Resource-Library/Subnet.md`](01-Terraform/Resource-Library/Subnet.md) | Subnet resource blocks |
+| 🖥️ VM | [`01-Terraform/Resource-Library/VM.md`](01-Terraform/Resource-Library/VM.md) | Linux/Windows VM resource |
+| 🌐 VNet | [`01-Terraform/Resource-Library/VNet.md`](01-Terraform/Resource-Library/VNet.md) | Virtual Network resource |
 
 ---
 
@@ -79,6 +102,18 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 > Core Azure services, networking fundamentals, and identity — the building blocks of every Azure deployment.
 
+### Cloud & Networking Fundamentals
+| Topic | File | Description |
+|-------|------|-------------|
+| ☁️ Cloud Models & Virtualisation | [`02-Azure/00-Cloud-Fundamentals/Cloud-Models-And-Virtualization.md`](02-Azure/00-Cloud-Fundamentals/Cloud-Models-And-Virtualization.md) | IaaS/PaaS/SaaS, cloud types |
+| 💻 Virtualisation Basics | [`02-Azure/00-Cloud-Fundamentals/Virtualization-Basics.md`](02-Azure/00-Cloud-Fundamentals/Virtualization-Basics.md) | Hypervisors, VMs, containers |
+| ❓ Cloud Fundamentals Q&A | [`02-Azure/00-Cloud-Fundamentals/Interview-Questions.md`](02-Azure/00-Cloud-Fundamentals/Interview-Questions.md) | Cloud basics interview Q&A |
+| 🌐 DNS & Routing | [`02-Azure/00-Networking-Fundamentals/DNS-and-Routing.md`](02-Azure/00-Networking-Fundamentals/DNS-and-Routing.md) | DNS resolution, routing tables |
+| 🔢 IP Addressing & CIDR | [`02-Azure/00-Networking-Fundamentals/IP-Addressing-and-CIDR.md`](02-Azure/00-Networking-Fundamentals/IP-Addressing-and-CIDR.md) | Subnetting, CIDR notation |
+| 🔌 Ports & Protocols | [`02-Azure/00-Networking-Fundamentals/Ports-and-Protocols.md`](02-Azure/00-Networking-Fundamentals/Ports-and-Protocols.md) | TCP/UDP, common ports |
+| ❓ Networking Q&A | [`02-Azure/00-Networking-Fundamentals/Interview-Questions.md`](02-Azure/00-Networking-Fundamentals/Interview-Questions.md) | Networking interview Q&A |
+
+### Azure Services
 | Topic | File | Description |
 |-------|------|-------------|
 | 🧩 Azure Fundamentals | [`02-Azure/Azure-Fundamentals.md`](02-Azure/Azure-Fundamentals.md) | Regions, Resource Manager |
@@ -108,6 +143,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🚇 VNet Gateway | [`02-Azure/Virtual-Network-Gateway.md`](02-Azure/Virtual-Network-Gateway.md) | VPN & ExpressRoute |
 | 🛡️ Azure Policy | [`02-Azure/Azure-Policy.md`](02-Azure/Azure-Policy.md) | Governance & Compliance |
 | 🔐 Entra ID | [`02-Azure/Entra-ID.md`](02-Azure/Entra-ID.md) | Identity and Access Management |
+| 🏗️ Entra ID Architecture | [`02-Azure/Entra-ID-Architecture.md`](02-Azure/Entra-ID-Architecture.md) | Tenant, RBAC, Conditional Access |
 | 💾 Azure Backup | [`02-Azure/Azure-Backup.md`](02-Azure/Azure-Backup.md) | VM, SQL, Files backup |
 | 🌩️ Azure DR | [`02-Azure/Azure-DR.md`](02-Azure/Azure-DR.md) | Site Recovery, Cross-Region DR |
 | 🛡️ Azure Security | [`02-Azure/Azure-Security.md`](02-Azure/Azure-Security.md) | Defender for Cloud, CSPM |
@@ -120,6 +156,14 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 > Azure Landing Zone design, Cloud Adoption Framework (CAF), and enterprise-scale governance patterns.
 
+### Architecture Fundamentals
+| Topic | File | Description |
+|-------|------|-------------|
+| 🕸️ Hub-Spoke Theory | [`03-Landing-Zone/00-Architecture-Fundamentals/Hub-Spoke-Theory.md`](03-Landing-Zone/00-Architecture-Fundamentals/Hub-Spoke-Theory.md) | Hub-Spoke design deep dive |
+| 🔒 Zero Trust Basics | [`03-Landing-Zone/00-Architecture-Fundamentals/Zero-Trust-Basics.md`](03-Landing-Zone/00-Architecture-Fundamentals/Zero-Trust-Basics.md) | Zero Trust principles |
+| ❓ Architecture Q&A | [`03-Landing-Zone/00-Architecture-Fundamentals/Interview-Questions.md`](03-Landing-Zone/00-Architecture-Fundamentals/Interview-Questions.md) | Architecture interview Q&A |
+
+### Landing Zone Topics
 | Topic | File | Description |
 |-------|------|-------------|
 | 📖 Introduction | [`03-Landing-Zone/Introduction.md`](03-Landing-Zone/Introduction.md) | What is a Landing Zone |
@@ -138,6 +182,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 👁️ Monitoring | [`03-Landing-Zone/Monitoring.md`](03-Landing-Zone/Monitoring.md) | ALZ monitoring baseline |
 | 🤖 Platform Automation | [`03-Landing-Zone/Platform-Automation-and-DevOps.md`](03-Landing-Zone/Platform-Automation-and-DevOps.md) | IaC-driven LZ deployment |
 | 💰 Billing & Entra | [`03-Landing-Zone/Azure-Billing-and-Entra-Tenant.md`](03-Landing-Zone/Azure-Billing-and-Entra-Tenant.md) | Tenant, EA, MCA setup |
+| 🏗️ Modular Landing Zone | [`03-Landing-Zone/Terraform-Modular-Landing-Zone.md`](03-Landing-Zone/Terraform-Modular-Landing-Zone.md) | Terraform modular LZ pattern |
 | ❓ Interview Questions | [`03-Landing-Zone/Interview-Questions.md`](03-Landing-Zone/Interview-Questions.md) | Landing Zone Q&A |
 
 ---
@@ -146,15 +191,21 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 > Pipeline design, GitOps workflows, and deployment automation for Azure-native and Kubernetes workloads.
 
+### Pipeline Fundamentals
+| Topic | File | Description |
+|-------|------|-------------|
+| 🌿 Branching Strategies | [`04-CI-CD/00-Pipeline-Fundamentals/Branching-Strategies.md`](04-CI-CD/00-Pipeline-Fundamentals/Branching-Strategies.md) | GitFlow, trunk-based dev |
+| 🔁 GitOps Basics | [`04-CI-CD/00-Pipeline-Fundamentals/GitOps-Basics.md`](04-CI-CD/00-Pipeline-Fundamentals/GitOps-Basics.md) | ArgoCD, Flux fundamentals |
+
+### CI/CD Topics
 | Topic | File | Description |
 |-------|------|-------------|
 | 🔵 Azure DevOps | [`04-CI-CD/Azure-DevOps.md`](04-CI-CD/Azure-DevOps.md) | Pipelines, repos, boards |
 | 🐙 GitHub Actions | [`04-CI-CD/GitHub-Actions.md`](04-CI-CD/GitHub-Actions.md) | Workflows, OIDC, runners |
 | ☸️ AKS Deployment | [`04-CI-CD/AKS-Deployment.md`](04-CI-CD/AKS-Deployment.md) | Helm, manifests, rollouts |
 | 🏗️ Terraform Pipeline | [`04-CI-CD/Terraform-Pipeline.md`](04-CI-CD/Terraform-Pipeline.md) | Plan/Apply gates, OIDC |
-| 🌿 Branching Strategies | [`04-CI-CD/Branching-Strategies.md`](04-CI-CD/Branching-Strategies.md) | GitFlow, trunk-based dev |
+| 🔁 GitOps Fundamentals | [`04-CI-CD/GitOps-Fundamentals.md`](04-CI-CD/GitOps-Fundamentals.md) | GitOps principles & tools |
 | 🚀 Release Strategy | [`04-CI-CD/Release-Strategy.md`](04-CI-CD/Release-Strategy.md) | Blue-Green, Canary, Ring |
-| 🔁 GitOps Basics | [`04-CI-CD/GitOps-Basics.md`](04-CI-CD/GitOps-Basics.md) | ArgoCD, Flux fundamentals |
 
 ---
 
@@ -164,12 +215,18 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 | Topic | File | Description |
 |-------|------|-------------|
-| 🖥️ OS Fundamentals | [`05-Linux/00-OS-Fundamentals/`](05-Linux/00-OS-Fundamentals) | Kernel, processes, filesystems |
-| ⌨️ Core Commands | [`05-Linux/01-Core-Commands/`](05-Linux/01-Core-Commands) | Essential CLI commands |
-| 🔐 Permissions | [`05-Linux/02-Permissions/`](05-Linux/02-Permissions) | chmod, chown, ACLs, sudo |
-| 🌐 Networking | [`05-Linux/03-Networking/`](05-Linux/03-Networking) | ip, ss, netstat, firewalld |
-| 🔧 SysAdmin | [`05-Linux/04-SysAdmin/`](05-Linux/04-SysAdmin) | systemd, cron, logs, users |
-| 📜 Bash Scripting | [`05-Linux/05-Bash-Scripting/`](05-Linux/05-Bash-Scripting) | Scripts, functions, automation |
+| 🖥️ File System Hierarchy | [`05-Linux/00-OS-Fundamentals/File-System-Hierarchy.md`](05-Linux/00-OS-Fundamentals/File-System-Hierarchy.md) | Linux FHS, mount points |
+| ⚙️ Kernel Architecture | [`05-Linux/00-OS-Fundamentals/Kernel-Architecture.md`](05-Linux/00-OS-Fundamentals/Kernel-Architecture.md) | Kernel, processes, syscalls |
+| ⌨️ Navigation & Files | [`05-Linux/01-Core-Commands/Navigation-and-Files.md`](05-Linux/01-Core-Commands/Navigation-and-Files.md) | ls, cd, find, cp, mv, rm |
+| 🔍 Text Processing | [`05-Linux/01-Core-Commands/Text-Processing-Grep-Awk-Sed.md`](05-Linux/01-Core-Commands/Text-Processing-Grep-Awk-Sed.md) | grep, awk, sed patterns |
+| 🔐 Users Groups Chmod | [`05-Linux/02-Permissions/Users-Groups-Chmod.md`](05-Linux/02-Permissions/Users-Groups-Chmod.md) | chmod, chown, ACLs, sudo |
+| 🔑 SSH & Keys | [`05-Linux/03-Networking/SSH-and-Keys.md`](05-Linux/03-Networking/SSH-and-Keys.md) | SSH config, key pairs |
+| 🌐 Troubleshooting | [`05-Linux/03-Networking/Troubleshooting-cURL-Ping.md`](05-Linux/03-Networking/Troubleshooting-cURL-Ping.md) | curl, ping, netstat, ss |
+| ⏰ Cron Jobs | [`05-Linux/04-SysAdmin/Cron-Jobs.md`](05-Linux/04-SysAdmin/Cron-Jobs.md) | crontab, scheduling |
+| 📦 Package Management | [`05-Linux/04-SysAdmin/Package-Management-Apt.md`](05-Linux/04-SysAdmin/Package-Management-Apt.md) | apt, dpkg, snap |
+| 🔧 Systemd & Services | [`05-Linux/04-SysAdmin/Systemd-and-Services.md`](05-Linux/04-SysAdmin/Systemd-and-Services.md) | systemctl, journalctl |
+| 📜 Automation Scripts | [`05-Linux/05-Bash-Scripting/Automation-Scripts.md`](05-Linux/05-Bash-Scripting/Automation-Scripts.md) | Real-world bash scripts |
+| 🔡 Variables & Logic | [`05-Linux/05-Bash-Scripting/Variables-and-Logic.md`](05-Linux/05-Bash-Scripting/Variables-and-Logic.md) | if/else, loops, functions |
 | 📝 Cheat Sheet | [`05-Linux/Cheat-Sheet.md`](05-Linux/Cheat-Sheet.md) | One-liner quick reference |
 
 ---
@@ -180,28 +237,14 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 | Topic | File | Description |
 |-------|------|-------------|
+| 🏗️ 3-Tier Architecture | [`06-Architecture-Patterns/3-Tier-Architecture.md`](06-Architecture-Patterns/3-Tier-Architecture.md) | Web/App/DB tier design |
 | 🕸️ Hub-Spoke | [`06-Architecture-Patterns/Hub-Spoke.md`](06-Architecture-Patterns/Hub-Spoke.md) | Hub-Spoke topology |
 | 🌍 Multi-Region | [`06-Architecture-Patterns/Multi-Region.md`](06-Architecture-Patterns/Multi-Region.md) | Active-Active, geo-redundancy |
 | 🔥 DR Strategy | [`06-Architecture-Patterns/DR-Strategy.md`](06-Architecture-Patterns/DR-Strategy.md) | RPO, RTO, failover design |
 | 🔒 Zero Trust | [`06-Architecture-Patterns/Zero-Trust.md`](06-Architecture-Patterns/Zero-Trust.md) | Zero Trust architecture |
 | 🏢 Enterprise Architecture | [`06-Architecture-Patterns/Enterprise-Architecture.md`](06-Architecture-Patterns/Enterprise-Architecture.md) | TOGAF, architecture views |
 | 🤝 Shared Services | [`06-Architecture-Patterns/Shared-Services.md`](06-Architecture-Patterns/Shared-Services.md) | Centralized service design |
-
----
-
-## 🔐 14 — Security Scanning
-
-> IaC and secrets security scanning tools for production-grade Terraform pipelines.
-
-| Topic | File | Description |
-|-------|------|-------------|
-| 🔧 Terraform Built-ins | [`14-Security-Scanning/01-Terraform-Built-ins.md`](14-Security-Scanning/01-Terraform-Built-ins.md) | terraform fmt & validate |
-| 🔍 TFLint | [`14-Security-Scanning/02-TFLint.md`](14-Security-Scanning/02-TFLint.md) | Linting & provider-specific checks |
-| 🛡️ tfsec | [`14-Security-Scanning/03-Tfsec.md`](14-Security-Scanning/03-Tfsec.md) | Static security analysis for Terraform |
-| ✅ Checkov | [`14-Security-Scanning/04-Checkov.md`](14-Security-Scanning/04-Checkov.md) | Policy-as-code & compliance scanning |
-| 🔬 Trivy | [`14-Security-Scanning/05-Trivy.md`](14-Security-Scanning/05-Trivy.md) | All-in-one vulnerability scanner |
-| 🐷 TruffleHog | [`14-Security-Scanning/06-TruffleHog.md`](14-Security-Scanning/06-TruffleHog.md) | Verified secrets scanning |
-| 🔑 Gitleaks | [`14-Security-Scanning/07-Gitleaks.md`](14-Security-Scanning/07-Gitleaks.md) | Fast secrets detection & pre-commit hooks |
+| 🔗 Service Mesh | [`06-Architecture-Patterns/Service-Mesh.md`](06-Architecture-Patterns/Service-Mesh.md) | Istio, mTLS, Envoy |
 
 ---
 
@@ -209,15 +252,17 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 > Domain-specific interview questions and scenario-based walkthroughs for Azure/DevOps engineering roles.
 
-| Topic             | File                                  | Description                 |
-| ----------------- | ------------------------------------- | --------------------------- |
-| ☁️ Azure          | [`07-Interview-Prep/Azure.md`](07-Interview-Prep/Azure.md)          | Core Azure Q&A              |
-| 🏢 Landing Zone   | [`07-Interview-Prep/Landing-Zone.md`](07-Interview-Prep/Landing-Zone.md)   | LZ design questions         |
-| 🐧 Linux          | [`07-Interview-Prep/Linux.md`](07-Interview-Prep/Linux.md)          | Linux admin Q&A             |
-| 🌐 Networking     | [`07-Interview-Prep/Networking.md`](07-Interview-Prep/Networking.md)     | Azure networking deep-dives |
-| 🎭 Scenario-Based | [`07-Interview-Prep/Scenario-Based.md`](07-Interview-Prep/Scenario-Based.md) | "What would you do if..."   |
-| 🛡️ Security      | [`07-Interview-Prep/Security.md`](07-Interview-Prep/Security.md)       | Security posture Q&A        |
-| 🏗️ Terraform     | [`07-Interview-Prep/Terraform.md`](07-Interview-Prep/Terraform.md)      | IaC interview scenarios     |
+| Topic | File | Description |
+|-------|------|-------------|
+| ☁️ Azure | [`07-Interview-Prep/Azure.md`](07-Interview-Prep/Azure.md) | Core Azure Q&A |
+| 🏢 Landing Zone | [`07-Interview-Prep/Landing-Zone.md`](07-Interview-Prep/Landing-Zone.md) | LZ design questions |
+| 🐧 Linux | [`07-Interview-Prep/Linux.md`](07-Interview-Prep/Linux.md) | Linux admin Q&A |
+| 🌐 Networking | [`07-Interview-Prep/Networking.md`](07-Interview-Prep/Networking.md) | Azure networking deep-dives |
+| 🎭 Scenario-Based | [`07-Interview-Prep/Scenario-Based.md`](07-Interview-Prep/Scenario-Based.md) | "What would you do if..." |
+| 🛡️ Security | [`07-Interview-Prep/Security.md`](07-Interview-Prep/Security.md) | Security posture Q&A |
+| 🏗️ Terraform | [`07-Interview-Prep/Terraform.md`](07-Interview-Prep/Terraform.md) | IaC interview scenarios |
+| 🔄 CI/CD | [`07-Interview-Prep/CI-CD.md`](07-Interview-Prep/CI-CD.md) | Pipeline & GitOps Q&A |
+| ☸️ Kubernetes & Docker | [`07-Interview-Prep/Kubernetes-Docker.md`](07-Interview-Prep/Kubernetes-Docker.md) | K8s & container Q&A |
 
 ---
 
@@ -252,7 +297,9 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 > Maps all vault topics to Cloud Adoption Framework pillars across strategy, govern, manage, and organize phases.
 
-📄 `10-CAF-Mapping/` — Cross-references workloads, services, and patterns against the six CAF methodology phases.
+| File | Description |
+|------|-------------|
+| 📄 [`10-CAF-Mapping/CAF-Mapping.md`](10-CAF-Mapping/CAF-Mapping.md) | Cross-references workloads, services, and patterns against CAF methodology phases |
 
 ---
 
@@ -260,7 +307,9 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 > Weekly study logs, goal tracking, and progress snapshots throughout the Batch 18 program.
 
-📄 `11-Weekly-Learning/` — Weekly entries with topics covered, blockers, and upcoming focus areas.
+| File | Description |
+|------|-------------|
+| 📅 [`11-Weekly-Learning/Progress-Tracker.md`](11-Weekly-Learning/Progress-Tracker.md) | Weekly entries with topics covered, blockers, and upcoming focus areas |
 
 ---
 
@@ -283,6 +332,48 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 ---
 
+## 🌿 13 — Git
+
+> Git fundamentals, platform comparison, repository setup and the full PR workflow for DevOps teams.
+
+| Topic | File | Description |
+|-------|------|-------------|
+| 🌐 Introduction | [`13-Git/01-Introduction.md`](13-Git/01-Introduction.md) | Git vs GitHub/GitLab/Azure Repos/Bitbucket |
+| 📁 Repository Setup | [`13-Git/02-Repository-Setup.md`](13-Git/02-Repository-Setup.md) | Repo creation, .gitignore, branch protection, pre-commit hooks |
+| 🔄 Core Workflow | [`13-Git/03-Core-Workflow.md`](13-Git/03-Core-Workflow.md) | Commit, Push, Pull Request, Code Review, branching strategies |
+
+---
+
+## 🔐 14 — Security Scanning
+
+> IaC and secrets security scanning tools for production-grade Terraform pipelines.
+
+| Topic | File | Description |
+|-------|------|-------------|
+| 🔧 Terraform Built-ins | [`14-Security-Scanning/01-Terraform-Built-ins.md`](14-Security-Scanning/01-Terraform-Built-ins.md) | terraform fmt & validate |
+| 🔍 TFLint | [`14-Security-Scanning/02-TFLint.md`](14-Security-Scanning/02-TFLint.md) | Linting & provider-specific checks |
+| 🛡️ Tfsec | [`14-Security-Scanning/03-Tfsec.md`](14-Security-Scanning/03-Tfsec.md) | Static security analysis for Terraform |
+| ✅ Checkov | [`14-Security-Scanning/04-Checkov.md`](14-Security-Scanning/04-Checkov.md) | Policy-as-code & compliance scanning |
+| 🔬 Trivy | [`14-Security-Scanning/05-Trivy.md`](14-Security-Scanning/05-Trivy.md) | All-in-one vulnerability scanner |
+| 🐷 TruffleHog | [`14-Security-Scanning/06-TruffleHog.md`](14-Security-Scanning/06-TruffleHog.md) | Verified secrets scanning |
+| 🔑 Gitleaks | [`14-Security-Scanning/07-Gitleaks.md`](14-Security-Scanning/07-Gitleaks.md) | Fast secrets detection & pre-commit hooks |
+
+---
+
+## 💰 15 — Cost & Governance
+
+> Azure cost management, tagging strategy, naming conventions, RBAC and OpenCost for Kubernetes.
+
+| Topic | File | Description |
+|-------|------|-------------|
+| 📊 OpenCost | [`15-Cost-Governance/01-OpenCost.md`](15-Cost-Governance/01-OpenCost.md) | Kubernetes cost monitoring on AKS |
+| 🏷️ Resource Tagging | [`15-Cost-Governance/02-Resource-Tagging.md`](15-Cost-Governance/02-Resource-Tagging.md) | Azure tagging strategy & policy enforcement |
+| 📛 Naming Convention | [`15-Cost-Governance/03-Naming-Convention.md`](15-Cost-Governance/03-Naming-Convention.md) | CAF-aligned naming patterns & Terraform locals |
+| 💡 Cost Optimization | [`15-Cost-Governance/04-Cost-Optimization.md`](15-Cost-Governance/04-Cost-Optimization.md) | Reserved instances, spot VMs, AKS & storage savings |
+| 🔐 Least Privilege RBAC | [`15-Cost-Governance/05-Least-Privilege-RBAC.md`](15-Cost-Governance/05-Least-Privilege-RBAC.md) | RBAC scopes, Managed Identity, PIM, OIDC |
+
+---
+
 ## ⚡ Quick Reference — Cheat Sheets
 
 > Jump directly to the most-used reference documents.
@@ -295,8 +386,8 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🔑 RBAC Quick Ref | [`02-Azure/RBAC.md`](02-Azure/RBAC.md) | Built-in roles, scope hierarchy |
 | 🛡️ NSG Rules | [`02-Azure/NSG.md`](02-Azure/NSG.md) | Priority, allow/deny patterns |
 | 📜 KQL Queries | [`02-Azure/Log-Analytics.md`](02-Azure/Log-Analytics.md) | Top KQL patterns for ops |
-| 🌿 Git Branching | [`04-CI-CD/Branching-Strategies.md`](04-CI-CD/Branching-Strategies.md) | GitFlow vs trunk-based |
-| 🔁 Terraform Loops | [`01-Terraform/Loops-Conditionals.md`](01-Terraform/Loops-Conditionals.md) | count, for_each, dynamic blocks |
+| 🌿 Git Workflow | [`13-Git/03-Core-Workflow.md`](13-Git/03-Core-Workflow.md) | Commit, PR, review commands |
+| 🔁 Terraform Loops | [`01-Terraform/13-Loops-Conditionals.md`](01-Terraform/13-Loops-Conditionals.md) | count, for_each, dynamic blocks |
 
 ---
 
@@ -305,126 +396,42 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 > Recommended study order for building from foundations to enterprise-grade expertise.
 
 ### Phase 1 — Foundations *(Weeks 1–2)*
-
-```
-Linux Fundamentals  →  Azure Fundamentals  →  Terraform Introduction & Installation
-```
-
-| Step | Topics                                                            |
-| ---- | ----------------------------------------------------------------- |
-| 1    | `05-Linux` — OS Fundamentals, Core Commands, Permissions          |
-| 2    | `02-Azure` — Azure Fundamentals, Architecture Fundamentals        |
-| 3    | `01-Terraform` — Introduction, Installation, Providers, Resources |
-
----
+| Step | Topics |
+|------|--------|
+| 1 | `05-Linux` — OS Fundamentals, Core Commands, Permissions |
+| 2 | `02-Azure` — Azure Fundamentals, Architecture Fundamentals |
+| 3 | `01-Terraform` — Introduction, Installation, Providers, Resources |
 
 ### Phase 2 — Core Skills *(Weeks 3–4)*
-
-```
-Terraform Deep Dive  →  Azure Networking  →  Identity & Security
-```
-
 | Step | Topics |
 |------|--------|
 | 4 | `01-Terraform` — Variables, Locals, Outputs, State Management, Remote Backend |
 | 5 | `02-Azure` — VNet, Subnets, NSG, Route Tables |
 | 6 | `02-Azure` — RBAC, Managed Identity, Key Vault |
-
----
+| 7 | `13-Git` — Git workflow, PRs, branching strategies |
 
 ### Phase 3 — Advanced IaC & Automation *(Weeks 5–6)*
-
-```
-Terraform Modules & Patterns  →  CI/CD Pipelines  →  Linux SysAdmin
-```
-
 | Step | Topics |
 |------|--------|
-| 7 | `01-Terraform` — Modules, Workspaces, Loops, Lifecycle, Best Practices |
-| 8 | `04-CI-CD` — Azure DevOps, GitHub Actions, Terraform Pipeline |
-| 9 | `05-Linux` — Bash Scripting, SysAdmin, Networking |
-
----
+| 8 | `01-Terraform` — Modules, Workspaces, Loops, Lifecycle, Best Practices |
+| 9 | `04-CI-CD` — Azure DevOps, GitHub Actions, Terraform Pipeline |
+| 10 | `14-Security-Scanning` — TFLint, tfsec, Checkov, Gitleaks |
 
 ### Phase 4 — Enterprise Architecture *(Weeks 7–8)*
-
-```
-Landing Zone Design  →  Architecture Patterns  →  Real-World Projects
-```
-
 | Step | Topics |
 |------|--------|
-| 10 | `03-Landing-Zone` — Introduction → CAF Overview → Enterprise-Scale |
-| 11 | `03-Landing-Zone` — Management Groups, Subscription Strategy, Governance, Policies |
+| 11 | `03-Landing-Zone` — CAF Overview, Enterprise-Scale, Management Groups |
 | 12 | `06-Architecture-Patterns` — Hub-Spoke, Zero-Trust, Multi-Region, DR |
-| 13 | `08-Real-World-Projects` — All four project implementations |
-
----
+| 13 | `15-Cost-Governance` — Tagging, Naming, Cost Optimization, RBAC |
+| 14 | `08-Real-World-Projects` — All project implementations |
 
 ### Phase 5 — Interview & Certification Prep *(Weeks 9–10)*
-
-```
-Interview Q&A Review  →  Scenario Practice  →  Mock Interviews
-```
-
 | Step | Topics |
 |------|--------|
-| 14 | `07-Interview-Prep` — All domain Q&A files |
-| 15 | [`07-Interview-Prep/Scenario-Based.md`](07-Interview-Prep/Scenario-Based.md) — Whiteboard & scenario walkthroughs |
-| 16 | `09-Decision-Logs` — Review ADRs to articulate architectural decisions |
-| 17 | All `Cheat-Sheet` files — Final revision sweep |
-
----
-
-## 🎯 Current Focus
-
-> Actively being developed and studied — as of **July 2026**.
-
-| Status | Area | Notes |
-|--------|------|-------|
-| 🔴 In Progress | `03-Landing-Zone` | Enterprise-Scale, Governance, Policies deep-dive |
-| 🔴 In Progress | `04-CI-CD` | Terraform Pipeline with OIDC, GitHub Actions reusable workflows |
-| 🟡 Reviewing | `01-Terraform` | Modules pattern refinement, Workspaces vs. directory structure |
-| 🟡 Reviewing | `07-Interview-Prep` | Adding scenario-based questions from Batch 18 sessions |
-| 🟢 Complete | `02-Azure` | 17-Point Enterprise Architect Master Format deployed! |
-| 🟢 Complete | `05-Linux` | Commands, permissions, Bash scripting |
-| ⚪ Queued | `06-Architecture-Patterns` | Multi-Region and DR Strategy |
-| ⚪ Queued | `08-Real-World-Projects` | Secure Hub-Spoke implementation |
-
----
-
-## 🛠️ Vault Setup & Tips
-
-### Recommended Obsidian Plugins
-
-| Plugin | Purpose |
-|--------|---------|
-| **Dataview** | Query notes as a database — generate dynamic ToCs and status boards |
-| **Templater** | Consistent frontmatter and note structure across all files |
-| **Excalidraw** | Architecture diagrams embedded directly in notes |
-| **Git** | Auto-backup vault to a GitHub repository |
-| **Kanban** | Visual board for tracking active learning tasks |
-| **Admonition** | Enhanced callout blocks for tips, warnings, and notes |
-
-### Vault Conventions
-
-- **YAML frontmatter** on every note (except this README)
-- **Source field** always set to `devopsinsiders/batch-18`
-- **Tags** use kebab-case: `terraform`, `azure-networking`, `landing-zone`
-- **Cross-links** use Obsidian wikilinks: `[[Note-Name]]`
-- **Code blocks** always include language identifier: ` ```hcl `, ` ```bash `, ` ```yaml `
-- **Callouts** for critical info: `> [!warning]`, `> [!tip]`, `> [!important]`
-
-### Standard Frontmatter Template
-
-```yaml
----
-tags: [topic, subtopic, azure/terraform/linux]
-source: devopsinsiders/batch-18
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
----
-```
+| 15 | `07-Interview-Prep` — All domain Q&A files |
+| 16 | [`07-Interview-Prep/Scenario-Based.md`](07-Interview-Prep/Scenario-Based.md) — Whiteboard scenarios |
+| 17 | `09-Decision-Logs` — Review ADRs to articulate architectural decisions |
+| 18 | All `Cheat-Sheet` files — Final revision sweep |
 
 ---
 
@@ -432,17 +439,20 @@ updated: YYYY-MM-DD
 
 | Metric | Value |
 |--------|-------|
-| 📁 Total Sections | 13 |
-| 📄 Estimated Notes | 85+ |
-| 🏗️ Terraform Topics | 17 |
-| ☁️ Azure Services Covered | 17 |
-| 🏢 Landing Zone Design Areas | 17 |
-| 🔄 CI/CD Topics | 7 |
-| 🎯 Interview Prep Domains | 7 |
-| 🔨 Real-World Projects | 4 |
+| 📁 Total Sections | 15 |
+| 📄 Total Notes | 170+ |
+| 🏗️ Terraform Topics | 19 + 9 Resource Library |
+| ☁️ Azure Services Covered | 33 |
+| 🏢 Landing Zone Topics | 18 |
+| 🔄 CI/CD Topics | 6 |
+| 🐧 Linux Topics | 13 |
+| 🎯 Interview Prep Domains | 9 |
+| 🔨 Real-World Projects | 5 |
 | 📋 Architecture Decision Records | 4 |
-| 🤖 Agentic AI Topics | 4 |
+| 🤖 Agentic AI Topics | 10 |
 | 🔐 Security Scanning Tools | 7 |
+| 🌿 Git Topics | 3 |
+| 💰 Cost & Governance Topics | 5 |
 
 ---
 
@@ -457,6 +467,7 @@ updated: YYYY-MM-DD
 | Microsoft Learn | [learn.microsoft.com](https://learn.microsoft.com) | AZ-104, AZ-305 paths |
 | Terraform Best Practices | [developer.hashicorp.com](https://developer.hashicorp.com/terraform/language) | Official HCL docs |
 | ALZ Terraform Module | [github.com/Azure/terraform-azurerm-caf-enterprise-scale](https://github.com/Azure/terraform-azurerm-caf-enterprise-scale) | CAF ALZ Terraform |
+| OpenCost | [opencost.io](https://www.opencost.io) | Kubernetes cost monitoring |
 
 ---
 
@@ -467,3 +478,4 @@ updated: YYYY-MM-DD
 *"The best time to build a knowledge system was when you started. The second best time is now."*
 
 </div>
+

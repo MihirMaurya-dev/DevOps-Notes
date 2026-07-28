@@ -127,3 +127,68 @@ I would declare multiple provider blocks in the root configuration, setting a di
 ### Q28: Scenario: The state file was accidentally deleted from the remote backend. How do you recover?
 **A:** 
 First, I would attempt to recover the state file from the remote backend's backup or versioning system (e.g., Blob Storage versioning). If versions are not enabled, recovery is highly manual. I would need to write matching configuration code and run `terraform import` for every single deployed resource to rebuild the state file from scratch. This highlights the absolute necessity of enabling versioning on state storage containers.
+
+---
+
+## From Recent Interviews (July 2026)
+
+### Q29: What is the `moved` block in Terraform and when would you use it?
+**A:** The `moved` block (introduced in TF 1.1) is a declarative way to rename a resource or move it into a module without destroying and recreating the actual cloud resource. You add it directly in your `.tf` files so the rename is tracked in version control.
+```hcl
+moved {
+  from = azurerm_resource_group.old_name
+  to   = azurerm_resource_group.new_name
+}
+```
+Unlike `terraform state mv` (which is a one-time CLI command), the `moved` block documents the change for the whole team.
+
+### Q30: What is linting in Terraform? Name a tool and what it catches.
+**A:** Linting statically analyzes `.tf` code before it is applied. **TFLint** is the most common tool. It catches:
+- Provider-specific errors (e.g., invalid Azure VM sizes like `Standard_ZZZ`).
+- Deprecated syntax or arguments.
+- Unused variables and declarations.
+- Missing required variables.
+It does NOT require cloud credentials and runs in the CI Validate stage before `terraform plan`.
+
+### Q31: What is the difference between `variable.tf` and `terraform.tfvars`?
+**A:**
+- `variables.tf` (or `variable.tf`): **Declares** variables — their name, type, description, and optional default value. It's the schema.
+- `terraform.tfvars`: **Assigns values** to declared variables. It's the data. You can have multiple `.tfvars` files (e.g., `dev.tfvars`, `prod.tfvars`) and pass them using `terraform apply -var-file="prod.tfvars"`.
+
+### Q32: What is a pattern module vs a resource module in Terraform?
+**A:**
+- **Resource Module**: Provisions one specific cloud resource type (e.g., a module that creates only a Storage Account). Thin, reusable, and single-purpose.
+- **Pattern Module** (also called an Architecture or Composition Module): Orchestrates multiple resource modules together to deploy a complete architecture (e.g., a "Web App" pattern that calls the VNet module + App Service module + Key Vault module). It represents a business-level template.
+
+### Q33: What logging levels does Terraform support, and how do you enable them?
+**A:** Set the `TF_LOG` environment variable to one of: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`. `TRACE` is the most verbose and is used for deep debugging of provider API calls. Logs are written to stderr by default, or to a file using `TF_LOG_PATH`.
+```bash
+export TF_LOG=DEBUG
+export TF_LOG_PATH=./terraform.log
+terraform apply
+```
+
+### Q34: After which Terraform command is the state file first created?
+**A:** The state file is created after the first successful **`terraform apply`**. `terraform init` creates the `.terraform/` directory and downloads providers. `terraform plan` reads state but does not write to it. Only `apply` actually creates/modifies the `terraform.tfstate`.
+
+### Q35: At what stage does Terraform download modules and providers?
+**A:** During **`terraform init`**. It reads the `required_providers` block and the `module` source blocks, downloads providers into `.terraform/providers/`, and downloads modules into `.terraform/modules/`.
+
+### Q36: If a variable is marked as `sensitive = true`, can it still appear in `terraform state`?
+**A:** Yes. `sensitive = true` only masks the value from **CLI plan/apply output logs**. The value is still stored in **plain text** in the state file. This is why state files must be encrypted at rest and access-controlled via RBAC. To truly protect it, retrieve it from Azure Key Vault via a data source at runtime instead of storing it in state.
+
+### Q37: If you pass a value hardcoded in a resource (e.g., a VM password), will it show in `terraform plan`?
+**A:** Yes, hardcoded sensitive values in resource blocks will appear in `terraform plan` output in plain text (unless the argument itself is marked sensitive by the provider). This is a security risk. Always use `variable` with `sensitive = true` or a Key Vault data source instead.
+
+### Q38: What is the purpose of Terraform Workspaces, and when should you avoid them?
+**A:** Workspaces create isolated state files from the same configuration directory (e.g., `dev` and `staging` workspaces). They are useful for testing changes in a parallel, ephemeral environment. **Avoid for Production separation**: Using `terraform.workspace` as conditionals in code leads to complex, error-prone configurations. Directory-based separation (`environments/dev/`, `environments/prod/`) is safer and clearer for distinct production environments.
+
+### Q39: How do you create 10 Storage Accounts across 10 different subscriptions with a single pipeline?
+**A:** Use a matrix/loop strategy in the pipeline (e.g., `strategy: matrix` in GitHub Actions or a `foreach` loop in ADO). Each iteration passes a different subscription ID as an environment variable. The Terraform code uses `provider "azurerm"` with the `subscription_id` passed via `TF_VAR_subscription_id`. Alternatively, use `for_each` with a map of subscription IDs in Terraform if managed with the `azurerm` provider aliasing pattern.
+
+### Q40: What are the `lifecycle` block arguments that can be used inside a resource block?
+**A:** The main arguments are:
+- `create_before_destroy = true`: Creates replacement before deleting the old resource (for zero-downtime updates).
+- `prevent_destroy = true`: Throws an error if `plan` includes destroying this resource (protects databases).
+- `ignore_changes = [tags, some_attribute]`: Ignores drift on specific attributes managed by other processes.
+- `replace_triggered_by = [resource.other]`: Forces replacement if another referenced resource changes.

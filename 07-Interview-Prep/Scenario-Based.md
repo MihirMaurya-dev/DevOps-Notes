@@ -120,3 +120,90 @@ kubectl logs <pod-name> --previous
 **Interviewer:** "The cloud bill this month spiked by 40% with no major releases. How do you find the cause?"
 **Your Answer:**
 I start by opening the cloud provider's Cost Management dashboard and grouping the charges by Service and Resource to pinpoint exactly what is driving the cost. I check for orphaned resources, like oversized test VMs or unattached premium disks that developers forgot to delete. I also investigate data egress fees, as unexpected outbound traffic can cause massive spikes. Moving forward, I would set up strict billing alarms and implement auto-shutdown policies for non-production environments.
+
+---
+
+## From Recent Interviews (July 2026) — Monitoring & Observability
+
+### Q27: What is the difference between logs, metrics, and traces?
+**A:**
+| Pillar | What it is | Example | Tool |
+|--------|-----------|---------|------|
+| **Logs** | Timestamped text records of discrete events | `"2026-07-28 ERROR: DB connection failed"` | ELK, Azure Monitor Logs |
+| **Metrics** | Aggregated numeric measurements over time | CPU = 87% at 14:30 | Prometheus, Azure Monitor |
+| **Traces** | End-to-end request tracking across services | Request → API → DB → Cache | Jaeger, OpenTelemetry |
+All three are needed for full observability. Use metrics for alerting, logs for debugging, traces for finding which service in a chain is slow.
+
+### Q28: Explain P50, P95, and P99 latency. When would you use each?
+**A:**
+- **P50** (median): 50% of requests finished in ≤ this time. Represents the "typical" user experience.
+- **P95**: 95% of requests finished within this time. Catches most users but excludes extreme outliers.
+- **P99**: 99% of requests finished within this time. Critical for detecting tail latency that affects your worst-served users.
+
+**Rule of thumb**: Alert on P99 for SLOs. Monitor P50 for overall health trends. If P50 is fine but P99 is high, a specific code path or database query is slow for complex requests.
+
+```
+Example: P50=50ms, P95=300ms, P99=2000ms
+→ Most users are fine, but 1% wait 2 seconds → investigate slow DB queries or lock contention.
+```
+
+### Q29: Suppose 30% of requests are timing out, 30% have high latency, and 40% are successful. What dashboards and alerts would you configure?
+**A:**
+**Dashboards:**
+- **Error Rate Dashboard**: HTTP 5xx/timeout rate over time, broken down by endpoint.
+- **Latency Dashboard**: P50/P95/P99 by endpoint. Identify which specific routes are slow.
+- **Infrastructure Dashboard**: CPU, memory, DB connection pool utilization, disk I/O.
+- **Dependency Dashboard**: Response times for downstream APIs, DB query times.
+
+**Alerts:**
+```
+Alert: Error rate > 5% for 5 minutes → PagerDuty
+Alert: P99 latency > 1s for 3 minutes → Slack warning
+Alert: DB connection pool saturation > 80% → immediate page
+Alert: Pod restart count > 3 in 10 minutes → Slack
+```
+
+**Investigation steps:**
+1. Check if the issue is specific to one endpoint or all traffic.
+2. Check DB slow query logs — timeout often = DB overload.
+3. Check if pod memory limits are being hit (OOMKilled restarts).
+4. Check downstream service dependency latency.
+
+### Q30: How do you monitor application health in production and alert the on-call engineer?
+**A:**
+1. **Metrics collection**: Azure Monitor Agent or Prometheus scrapes pod/VM metrics.
+2. **Dashboards**: Grafana or Azure Workbooks for visual dashboards (error rates, latency, saturation).
+3. **Alert rules**: Azure Monitor Alert rules or Prometheus Alertmanager fire when thresholds are breached.
+4. **Notification routing**: Alerts route to **PagerDuty** or **OpsGenie** which manages on-call schedules and escalation policies. On-call engineer gets a phone call, SMS, and push notification.
+5. **Runbooks**: Each alert links to a runbook with investigation steps so the on-call engineer knows exactly what to check.
+
+### Q31: Scenario: A website becomes slow, but Azure Monitor shows everything is green. What do you check?
+**A:** Azure Monitor may only show infrastructure metrics (CPU, memory). "Everything green" doesn't mean the app is fast.
+
+Check:
+1. **Application Insights**: Look at request duration, dependency call times, exceptions. The app may be waiting on a slow DB query.
+2. **External dependencies**: Third-party API the app calls may be slow (payment gateway, external auth).
+3. **Database**: Query performance — long-running queries, lock waits, connection pool exhaustion.
+4. **CDN/DNS**: Slow DNS resolution or CDN miss rate causing users to hit the origin server for every request.
+5. **Client-side**: Use browser DevTools Network tab — perhaps a large JS bundle or render-blocking CSS is the issue, not the server.
+
+### Q32: How would you investigate a sudden spike in application latency?
+**A:**
+```
+Step 1: Check P99 latency breakdown by endpoint → identify which route is slowest.
+Step 2: Check DB slow query log → look for queries taking > 1s.
+Step 3: Check resource metrics at the spike time → CPU, memory, disk I/O throttling.
+Step 4: Check deployment history → did a recent deploy coincide with the spike?
+Step 5: Check downstream dependencies → is an external API slow?
+Step 6: Check connection pool metrics → is the app waiting for DB connections?
+Step 7: Check GC logs (Java/Node) → is Garbage Collection pausing the app?
+```
+
+### Q33: Describe your monitoring and alerting strategy for a production system.
+**A:** A layered strategy covering all the Four Golden Signals (Google SRE):
+- **Latency**: P99 request duration per endpoint. Alert if > SLO threshold.
+- **Traffic**: Requests/second. Detects sudden drops (partial outage) or spikes (DDoS).
+- **Errors**: HTTP 5xx rate, exception rate. Alert if > 1% for sustained 5 minutes.
+- **Saturation**: CPU, memory, DB connection pool, disk. Alert at 80% before it becomes 100%.
+
+**Tool stack**: Prometheus + Alertmanager → PagerDuty → on-call engineer. Grafana for dashboards. Azure Monitor for infrastructure. Application Insights for APM.

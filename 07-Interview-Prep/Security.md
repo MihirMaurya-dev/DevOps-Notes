@@ -119,6 +119,125 @@ SigninLogs
 
 ---
 
+## From Recent Interviews (July 2026)
+
+### Q27: What steps would you take if a CVE is announced for your production container image?
+**A:**
+1. **Assess impact**: Check the CVE severity (CVSS score) and whether your image actually uses the vulnerable component/version.
+2. **Pull the fix**: Update the base image version in the Dockerfile to a patched version (`FROM ubuntu:24.04` → latest).
+3. **Rebuild & scan**: Trigger the CI pipeline to rebuild the image and run Trivy/Defender scan — confirm CVE is resolved.
+4. **Deploy urgently**: Push through the CD pipeline to replace production containers. In Kubernetes, trigger a rolling update.
+5. **Monitor**: Watch logs and alerts for any signs of attempted exploitation during the window.
+6. **Document**: Log in change management and update your vulnerability tracking tool (e.g., Jira, Defender for Cloud).
+
+### Q28: What is supply chain security in DevSecOps?
+**A:** Supply chain security protects every piece of software your pipeline consumes — not just your own code. This includes:
+- **Base images**: Use trusted, minimal images (distroless). Scan with Trivy.
+- **Third-party libraries**: Use Software Composition Analysis (SCA) tools (Dependabot, Snyk) to detect vulnerable packages.
+- **Build tools and runners**: Use pinned versions; use ephemeral, clean CI runners.
+- **Image signing**: Use Cosign/Notary to cryptographically sign images; enforce signature verification in K8s admission (OPA/Gatekeeper).
+- **SBOM** (Software Bill of Materials): Generate a manifest of all components in the image for audit and incident response.
+
+### Q29: How would you implement DevSecOps in a CI/CD pipeline end to end?
+**A:**
+```
+Commit → Pre-commit hooks (detect-secrets, trufflehog)
+      → SAST (SonarQube) — static code analysis
+      → SCA (Snyk/Dependabot) — dependency vulnerability scan
+      → IaC Scan (Checkov/tfsec) — Terraform misconfigurations
+      → Build Docker image
+      → Image Scan (Trivy) — OS + app layer CVEs
+      → Image Signing (Cosign)
+      → Deploy to Staging
+      → DAST (OWASP ZAP) — runtime attack simulation
+      → Quality Gate check → Approve → Production
+```
+
+### Q30: When connecting to a backend, how do you decide between TLS 1.2 and TLS 1.3?
+**A:**
+- **TLS 1.3** is the modern standard — use it by default for all new connections. It is faster (1-RTT handshake vs 2-RTT in TLS 1.2), more secure (removes weak cipher suites like RSA key exchange), and supports forward secrecy natively.
+- **TLS 1.2** is still widely supported and acceptable, but must be configured with strong cipher suites (disabling RC4, DES, SHA-1).
+- In Azure, enforce minimum TLS version on App Services, Storage Accounts, and API Management: `minimum_tls_version = "TLS1_2"`. Upgrade to TLS 1.3 where both client and server support it.
+
+### Q31: How do you verify backend connectivity if `telnet` is not available?
+**A:** Use alternative tools:
+```bash
+# Check TCP port connectivity (Linux/Mac)
+curl -v telnet://hostname:port
+nc -zv hostname port          # netcat
+python3 -c "import socket; s=socket.socket(); s.connect(('hostname', port)); print('connected')"
+
+# From bash built-in (no tools needed)
+bash -c "echo > /dev/tcp/hostname/port" && echo "Open"
+
+# On Windows PowerShell
+Test-NetConnection -ComputerName hostname -Port port
+```
+These methods test raw TCP connectivity without needing telnet.
+
+### Q32: What is SAST vs DAST — are they software or methodologies?
+**A:** They are **methodologies** (approaches to testing) implemented by software tools.
+- **SAST** (Static Application Security Testing): Analyzes **source code or binaries without executing** them. Tools: SonarQube, Checkmarx, Semgrep. Runs at build time.
+- **DAST** (Dynamic Application Security Testing): Tests a **running application** by simulating attacks from the outside (black-box testing). Tools: OWASP ZAP, Burp Suite. Runs against a deployed staging environment.
+
+### Q33: What are the steps to create a CSR (Certificate Signing Request) and sign it?
+**A:**
+```bash
+# Step 1: Generate a private key
+openssl genrsa -out server.key 2048
+
+# Step 2: Create a CSR (contains public key + subject info)
+openssl req -new -key server.key -out server.csr \
+  -subj "/C=IN/ST=MH/O=MyCompany/CN=myapp.example.com"
+
+# Step 3: Submit CSR to a Certificate Authority (CA)
+# The CA validates domain ownership and returns a signed certificate (server.crt)
+
+# Step 4: If self-signed (internal):
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+# Step 5: Deploy the certificate + private key to Azure App Gateway / Key Vault
+```
+
+### Q34: What are the components of a digital certificate?
+**A:** An X.509 certificate contains:
+- **Subject**: Who the certificate is issued to (Common Name / domain).
+- **Issuer**: The CA that signed it.
+- **Public Key**: Used to encrypt data sent to the subject.
+- **Validity Period**: Not Before / Not After dates.
+- **Serial Number**: Unique identifier from the CA.
+- **Subject Alternative Names (SANs)**: Additional domains/IPs the cert covers.
+- **Signature Algorithm**: How the CA signed it (e.g., SHA256withRSA).
+- **CA Signature**: Cryptographic proof from the CA.
+
+### Q35: How do you ensure a secret is completely removed from a Git repository's history?
+**A:** Deleting the file and committing is **not enough** — the secret still exists in all previous commits.
+```bash
+# Method 1: BFG Repo-Cleaner (fastest)
+java -jar bfg.jar --delete-files secrets.txt
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+git push --force
+
+# Method 2: git filter-repo
+git filter-repo --invert-paths --path secrets.txt
+git push --force
+```
+After history rewrite:
+1. **Immediately rotate/revoke** the exposed credential at the source.
+2. Notify all collaborators to re-clone the repo (their local clones still have the old history).
+3. If the repo was public, assume the secret is compromised regardless.
+
+### Q36: Have you worked with PCI-DSS audits? What are key DevOps controls?
+**A:** PCI-DSS (Payment Card Industry Data Security Standard) key controls relevant to DevOps:
+- **Requirement 6**: Secure software development. Enforce SAST/DAST in pipelines; review code changes.
+- **Requirement 7/8**: Restrict access. Enforce RBAC, MFA, JIT access. No shared accounts.
+- **Requirement 10**: Audit logging. Centralize all pipeline and infrastructure logs to a SIEM (Microsoft Sentinel).
+- **Requirement 11**: Regular testing. Run vulnerability scans and penetration tests on production.
+- **IaC Controls**: Checkov/tfsec scans ensure Terraform doesn't deploy open ports or unencrypted storage into the cardholder data environment (CDE).
+
+---
+
 ## Related Notes
 - [[Azure]] — Azure platform, RBAC, Managed Identity
 - [[CI-CD]] — Securing CI/CD pipelines

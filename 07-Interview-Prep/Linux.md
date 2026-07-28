@@ -173,3 +173,85 @@ First, I run `top` or `htop` and sort by CPU usage to identify the specific Proc
 ### Q28: Scenario: You lose the root password and need to gain access to a physical Linux server.
 **A:** 
 I would reboot the server and interrupt the GRUB boot menu. I would edit the boot parameters by appending `init=/bin/bash` or `rd.break` to the kernel line. This boots the system into a single-user shell without requiring a password. I would then mount the root filesystem with write access (`mount -o remount,rw /`), run the `passwd` command to set a new root password, and reboot.
+
+---
+
+## From Recent Interviews (July 2026)
+
+### Q29: How does DNS resolution work internally?
+**A:**
+1. Browser checks its **local cache**.
+2. OS checks `/etc/hosts` file.
+3. OS queries the **local DNS resolver** (configured in `/etc/resolv.conf`, usually the gateway or Azure DNS `168.63.129.16`).
+4. If not cached, the resolver performs **recursive resolution**:
+   - Queries a **Root DNS server** → gets NS for `.com`
+   - Queries the **TLD server** (`.com`) → gets NS for `example.com`
+   - Queries the **Authoritative DNS server** for `example.com` → gets the A record (IP)
+5. The resolver caches the result per TTL and returns it to the client.
+
+### Q30: What is a Cron Job? How do you troubleshoot if it hasn't run for 3 days?
+**A:** A cron job is a scheduled Linux task defined in a crontab file (`crontab -e`). It runs automatically at specified times.
+
+Troubleshooting steps:
+```bash
+# 1. Check if cron service is running
+systemctl status cron   # or crond
+
+# 2. Check cron logs
+grep CRON /var/log/syslog
+journalctl -u cron --since "3 days ago"
+
+# 3. Verify the crontab syntax is correct
+crontab -l
+
+# 4. Check script permissions (must be executable)
+ls -la /path/to/script.sh
+chmod +x /path/to/script.sh
+
+# 5. Test the script runs manually as the cron user
+sudo -u www-data /path/to/script.sh
+
+# 6. Check for environment variable issues (cron has a minimal env)
+# Add PATH explicitly in the script or crontab
+```
+
+### Q31: How would you debug high CPU, high memory, or high disk utilization on a Linux server?
+**A:**
+**High CPU:**
+```bash
+top                          # Identify PID consuming CPU
+ps aux --sort=-%cpu | head   # Sort by CPU
+strace -p <PID>              # See system calls of the process
+```
+
+**High Memory:**
+```bash
+free -h                      # Total/used/free RAM
+ps aux --sort=-%mem | head   # Top memory consumers
+dmesg | grep -i "oom"        # Check for OOM killer events
+```
+
+**High Disk:**
+```bash
+df -h                        # Disk capacity per filesystem
+du -sh /var/log/*            # Find which directory is growing
+lsof | grep deleted          # Find deleted-but-open files still consuming space
+df -i                        # Check inode exhaustion
+```
+
+### Q32: What is the difference between TCP and UDP, and where have you used each?
+**A:**
+| | TCP | UDP |
+|-|-----|-----|
+| Connection | Connection-oriented (3-way handshake) | Connectionless |
+| Reliability | Guaranteed delivery, ordered | No guarantee, may drop packets |
+| Speed | Slower (overhead) | Faster (no overhead) |
+| Use cases | HTTP/HTTPS, SSH, DB connections, Terraform remote state | DNS queries, video streaming, VoIP, game state sync, Prometheus metrics (some) |
+
+In DevOps: SSH to VMs uses TCP port 22. Prometheus scrape uses TCP 9090. DNS lookups use **UDP 53** (with TCP fallback for large responses).
+
+### Q33: Explain Load Balancer, Reverse Proxy, and Ingress with real examples.
+**A:**
+- **Load Balancer**: Distributes incoming traffic across multiple backend servers. Example: **Azure Load Balancer** distributing requests across 3 VMs running the same web app. Operates at L4.
+- **Reverse Proxy**: Sits in front of backend servers and handles requests on their behalf. It can terminate SSL, cache responses, and provide WAF. Example: **NGINX** or **Azure Application Gateway**.
+- **Ingress (K8s)**: A Kubernetes-native API object that defines HTTP/HTTPS routing rules. An **Ingress Controller** (like NGINX Ingress) watches Ingress objects and configures the proxy accordingly. Example: Route `/api` to backend service, `/app` to frontend service — all entering via port 443 on one external IP.

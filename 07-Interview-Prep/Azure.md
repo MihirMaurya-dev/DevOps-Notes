@@ -147,3 +147,95 @@ This is likely a networking or egress configuration issue. If the cluster uses a
 ### Q28: Scenario: You need to grant a contractor temporary administrative access to an Azure subscription. How do you do it securely?
 **A:** 
 I would use Entra ID Privileged Identity Management (PIM). I would invite the contractor as an external guest user and assign them the specific administrative role as "Eligible" with a strict expiration date. When they need to perform a task, they must activate the role via PIM, provide a justification, and pass an MFA prompt. Their access will automatically expire after a few hours, leaving zero standing privileges.
+
+---
+
+## From Recent Interviews (July 2026)
+
+### Q29: What is the difference between Azure Application Gateway and Azure Load Balancer?
+**A:**
+| Feature | Azure Load Balancer | Application Gateway |
+|---------|-------------------|-------------------|
+| OSI Layer | Layer 4 (TCP/UDP) | Layer 7 (HTTP/HTTPS) |
+| SSL Termination | No | Yes |
+| WAF Support | No | Yes |
+| URL Path Routing | No | Yes (`/api/*` → backend1) |
+| Cost | Lower | Higher |
+Use **Load Balancer** for non-HTTP traffic or high-throughput, low-latency L4 needs. Use **Application Gateway** for web apps needing WAF, SSL offload, or content-based routing.
+
+### Q30: What is an NSG (Network Security Group) and how does it work?
+**A:** An NSG is a virtual stateful firewall applied to a **Subnet** or a **NIC**. It contains ordered **inbound** and **outbound** security rules. Each rule specifies: source/destination IP (or ASG), port, protocol, and allow/deny action. Rules are evaluated in priority order (lower number = higher priority). Azure processes the lowest-priority matching rule and stops. NSGs are free and are the primary tool for micro-segmentation in Azure.
+
+### Q31: How does Azure Key Vault secure secrets and how do you integrate it?
+**A:** Key Vault stores secrets, keys, and certificates. Access is controlled via:
+1. **RBAC** (recommended): Assign roles like `Key Vault Secrets User` to identities.
+2. **Access Policies** (legacy): Grant get/list/set permissions per identity.
+
+Integration in Terraform:
+```hcl
+data "azurerm_key_vault_secret" "db_password" {
+  name         = "db-password"
+  key_vault_id = azurerm_key_vault.main.id
+}
+# Use it in a resource:
+# password = data.azurerm_key_vault_secret.db_password.value
+```
+In CI/CD pipelines, reference via Variable Group linked to Key Vault.
+
+### Q32: If a VM goes down unexpectedly, what is your recovery process?
+**A:**
+1. **Identify the failure type**: Compute issue (VM crashed) vs disk issue (OS disk corrupted).
+2. If disks are healthy: Restart the VM via Azure Portal/CLI.
+3. If the OS is corrupted: Attach the OS disk to a recovery VM, fix the issue, re-attach.
+4. If unrecoverable: Restore from **Azure Backup / Recovery Services Vault** using the latest restore point.
+5. If no backup: Redeploy from Terraform IaC and restore data from DB backups.
+Prevention: Enable automated backup policies, use VMSS for stateless workloads.
+
+### Q33: Two VNets have overlapping IP ranges. Can they communicate via VNet Peering?
+**A:** **No.** VNet Peering requires non-overlapping IP address spaces. If two VNets share the same CIDR (e.g., both use `10.0.0.0/16`), you cannot peer them. Options to work around this:
+- **Azure Private Link**: Expose specific services from one VNet to another without peering.
+- **NAT Gateway with custom routes** to translate addresses.
+- **Redesign**: Assign non-overlapping CIDRs from the start using an enterprise IPAM strategy.
+
+### Q34: How would you troubleshoot if a user cannot RDP/SSH to an Azure VM?
+**A:**
+1. **NSG Check**: `IP Flow Verify` (Network Watcher) to see if the NSG is blocking port 3389/22.
+2. **VM Status**: Ensure the VM is Running, not deallocated.
+3. **Public IP**: Confirm the VM or Bastion has a valid public IP (or use Bastion for private VMs).
+4. **JIT Access**: If JIT is enabled, request access first.
+5. **OS Firewall**: Use Azure Serial Console to check if Windows Firewall or iptables is blocking.
+6. **DNS/IP**: Ensure you are connecting to the correct IP address.
+
+### Q35: What is a SAS Token, and when would you use it over RBAC?
+**A:** A **Shared Access Signature (SAS)** token is a time-limited, signed URL that grants specific permissions (read/write/delete) to a specific Storage Account resource (blob, queue, container) **without requiring Azure AD authentication**.
+
+Use SAS when:
+- A **third party** or external system needs temporary access and cannot be assigned an Azure identity.
+- You need **scoped, time-bound** access to a specific blob (e.g., share a download link for 24 hours).
+
+Prefer **RBAC** for internal services and teams — it's auditable, identity-based, and doesn't require managing token expiry manually.
+
+### Q36: What is Terraform Drift? How do you detect and handle it before running `terraform plan`?
+**A:** Drift = the real-world Azure resource differs from what's in the Terraform state (due to manual Portal changes). Detection:
+- `terraform plan` automatically performs a **refresh** of real-world state and shows drift as proposed changes.
+- `terraform refresh` (deprecated) or `terraform plan -refresh-only` to see only drift without changes.
+
+Handling drift:
+- If the manual change is **correct** → update `.tf` code to match, so `plan` shows no changes.
+- If the manual change is **wrong** → run `terraform apply` to revert to the defined state.
+- Use `lifecycle { ignore_changes = [...] }` for attributes intentionally managed outside Terraform.
+
+### Q37: Explain Active-Passive vs Active-Active Disaster Recovery in Azure.
+**A:**
+- **Active-Passive**: Primary region serves all traffic. Secondary region is a warm standby (pre-provisioned infra, synced data). On failure, DNS or Traffic Manager points to secondary. **Lower cost, higher RTO** (time to fail over).
+- **Active-Active**: Both regions serve traffic simultaneously behind Azure Front Door or Traffic Manager. Requires data synchronization (Cosmos DB global replication, SQL geo-replication). **Zero RTO, higher cost** — both regions must be fully sized.
+
+### Q38: How do you provide outbound internet access to private VMs during migration without assigning Public IPs?
+**A:** Use **Azure NAT Gateway** attached to the subnet. VMs keep their private IPs, and outbound traffic is translated via the NAT Gateway's public IP. Alternatively, in a Hub-Spoke model, route all traffic through **Azure Firewall** in the Hub with FQDN allow rules for the specific software download URLs. Remove or tighten the rule after migration is complete.
+
+### Q39: How does a backend communicate with a database securely in Azure?
+**A:**
+1. **Private Endpoint on the DB**: The database (Azure SQL, Cosmos DB) is assigned a private IP in the VNet — no public exposure.
+2. **Managed Identity**: The backend app (App Service, VM) uses its Managed Identity to authenticate to the DB without any connection string passwords.
+3. **NSG rules**: Only allow traffic from the backend subnet IP range to the DB subnet on the specific port (e.g., 1433).
+4. **SSL/TLS enforced**: Enable `Require Secure Transport` on the DB server.

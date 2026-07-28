@@ -122,3 +122,105 @@ CD (Deployment): Deploy to Staging → Auto-test → Deploy to Prod
 
 ### Q31: Scenario: The application requires complex integration testing with external services. How do you mock or handle this in CI?
 **A:** Relying on actual external services in CI causes brittle, slow, and flaky tests. I would use tools like WireMock to stub the external API responses or use Testcontainers to spin up lightweight, ephemeral Docker containers of databases, message queues, or mock servers during the CI run. This ensures the tests are fast, self-contained, and isolated from external network or state issues.
+
+---
+
+## From Recent Interviews (July 2026)
+
+### Q32: What is a Service Connection in Azure DevOps? What is required to create one?
+**A:** A Service Connection defines how Azure DevOps authenticates to an external service (Azure, AWS, SonarQube, GitHub, etc.). To create one for Azure, you need:
+- **Subscription ID and Name**
+- **Authentication method**: Modern approach is **Workload Identity Federation (OIDC)** — no secrets to manage. Legacy approach uses a Service Principal with a client secret.
+- A Service Principal or Managed Identity with appropriate RBAC on the target Azure subscription.
+OIDC is preferred because there are no rotating secrets; ADO exchanges a short-lived JWT with Azure Entra ID.
+
+### Q33: What is the difference between a Task Group and a Deployment Group in Azure DevOps?
+**A:**
+- **Task Group**: A reusable collection of pipeline **steps/tasks** that can be referenced across multiple pipelines. Think of it as a pipeline "function." Changes to the task group propagate to all pipelines using it.
+- **Deployment Group**: A set of **target machines** (physical/VMs) registered with ADO, used for **classic release pipelines** to deploy to specific on-premises or cloud VMs. It's the deployment target — not the pipeline logic.
+
+### Q34: What are Gates in Azure DevOps?
+**A:** Gates are automated pre/post-deployment checks in release pipelines that must pass before moving to the next stage. Common gate types:
+- **Query Work Items**: Block deployment if there are P0 bugs open.
+- **Invoke REST API**: Call an external health check endpoint and verify `200 OK`.
+- **Azure Monitor Alerts**: Block if there are active alerts.
+- **SonarQube Quality Gate**: Block if code coverage or bug count fails threshold.
+
+### Q35: How would you implement a CI/CD pipeline for deploying to a multi-region AKS cluster?
+**A:**
+```yaml
+# Pipeline stages for multi-region AKS deployment
+stages:
+  - stage: Build
+    # Build and push Docker image to ACR
+
+  - stage: Deploy_EastUS
+    dependsOn: Build
+    steps:
+      - task: KubernetesManifest@0   # Deploy to East US AKS
+      - task: InvokeRestAPI@1        # Run smoke tests / health checks
+    # Gate: Only proceed if health check passes
+
+  - stage: Deploy_WestUS
+    dependsOn: Deploy_EastUS          # Sequential - West only if East passes
+    steps:
+      - task: KubernetesManifest@0   # Deploy to West US AKS
+```
+Use environment approvals and gates between regions to enforce sequential, validated promotion.
+
+### Q36: When would you use a Managed Identity instead of a Service Principal?
+**A:**
+| Scenario | Use |
+|---------|-----|
+| Azure resource (VM, App Service, AKS) accessing another Azure service | **Managed Identity** — no credential management |
+| CI/CD pipeline (GitHub Actions, ADO, Jenkins) accessing Azure | **Service Principal** with OIDC federation |
+| External application (non-Azure) accessing Azure | **Service Principal** with client secret/cert |
+Managed Identity is always preferred for Azure-to-Azure authentication as Azure handles credential rotation automatically.
+
+### Q37: What is the difference between `git commit` and `git push`?
+**A:**
+- `git commit`: Saves a snapshot of staged changes to your **local** repository history. No network involved.
+- `git push`: Uploads your local commits to the **remote** repository (e.g., Azure Repos, GitHub).
+
+Workflow: `git add` → `git commit` (local save) → `git push` (share with team).
+
+### Q38: What is the difference between `git fetch` and `git pull`?
+**A:**
+- `git fetch`: Downloads remote changes (new commits, branches) to your local remote-tracking refs (e.g., `origin/main`) **without** merging them into your working branch. Safe — lets you review changes first.
+- `git pull`: `fetch` + `merge` (or `rebase`) in one command. It immediately integrates remote changes into your current branch.
+
+### Q39: How does a CI/CD pipeline authenticate with Azure using Workload Identity Federation?
+**A:**
+1. ADO/GitHub acts as an OIDC **Identity Provider**.
+2. Azure Entra ID is configured to **trust** that OIDC issuer.
+3. When the pipeline runs, it requests a **short-lived JWT token** from its OIDC endpoint.
+4. The pipeline presents this JWT to Azure Entra ID.
+5. Entra ID validates the token, checks the trust policy, and returns a **temporary Azure access token**.
+6. The pipeline uses this token to call Azure APIs — **no secrets stored anywhere**.
+
+### Q40: How do you promote code from Dev → QA → Production in Azure DevOps?
+**A:** Use a multi-stage YAML pipeline with environment-based approvals:
+```yaml
+stages:
+  - stage: Dev
+    environment: dev
+    # Auto-deploy on every merge to main
+
+  - stage: QA
+    dependsOn: Dev
+    environment: qa        # Requires QA team approval gate
+    # Deploy same artifact from Dev
+
+  - stage: Production
+    dependsOn: QA
+    environment: production  # Requires manager approval + business hours gate
+    # Deploy exact same Docker image/Helm chart — never rebuild
+```
+The key principle: **build once, deploy many**. The same immutable artifact flows through all stages.
+
+### Q41: How do you implement rollback if a deployment fails?
+**A:**
+- **Kubernetes**: `kubectl rollout undo deployment/<name>` or `helm rollback <release> <revision>`.
+- **Blue-Green**: Switch the load balancer/Ingress rule back to the Blue (old) environment instantly.
+- **Canary**: Set traffic weight back to 0% for new version.
+- **CI/CD Pipeline**: Trigger a re-deploy of the previous pipeline run's artifact using ADO's `Re-deploy` button or a dedicated rollback stage that references the last known-good image tag stored in a variable group.
