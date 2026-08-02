@@ -178,9 +178,18 @@ VPA is installed as a separate controller. You create a `VerticalPodAutoscaler` 
 4. Fix the chart in a feature branch, test in dev/staging.
 5. Re-promote with a controlled canary rollout.
 
+### Q24: What is your experience with Kubernetes (AKS)?
+**A:**
+- Cluster provisioning using Terraform
+- Autoscaling (HPA, cluster autoscaler)
+- Ingress controllers (NGINX/App Gateway)
+- Networking (CNI, Calico)
+- Secrets, ConfigMaps, RBAC
+- Monitoring using Prometheus/Grafana and Azure Monitor
+
 ---
 
 ## Related Notes
-- [[CI-CD]] — Deployment pipelines to AKS
+- [[CI-CD]] - Deployment pipelines to AKS
 - [[Security]] — Container image scanning, RBAC in K8s
 - [[Azure]] — AKS networking, ACR

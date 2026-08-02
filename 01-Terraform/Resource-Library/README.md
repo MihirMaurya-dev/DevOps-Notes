@@ -15,6 +15,9 @@ This directory contains **ready-to-use Terraform resource templates** for common
 | [Log-Analytics.md](Log-Analytics.md) | Log Analytics Workspace | Retention, diagnostic settings |
 | [Storage-Account.md](Storage-Account.md) | Storage Account | Blob, lifecycle, encryption |
 | [Resource-Group.md](Resource-Group.md) | Resource Groups | Tags, locks |
+| [Public-IP.md](Public-IP.md) | Azure Public IP | Static vs Dynamic allocations |
+| [Network-Interface.md](Network-Interface.md) | Network Interface (NIC) | IP Configurations, connecting VMs |
+| [NAT-Gateway.md](NAT-Gateway.md) | Azure NAT Gateway | Secure outbound internet routing |
 
 ## How to Use
 

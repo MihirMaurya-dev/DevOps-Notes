@@ -52,23 +52,34 @@ tar -xzf archive.tar.gz
 ### Q7: How do you run a process in the background?
 **A:** You can append an ampersand `&` to the end of the command to run it in the background. If a process is already running in the foreground, press `Ctrl+Z` to suspend it, then type `bg` to resume it in the background.
 
+### Q8: What is the difference between TCP and UDP, and where have you used each?
+**A:**
+| | TCP | UDP |
+|-|-----|-----|
+| Connection | Connection-oriented (3-way handshake) | Connectionless |
+| Reliability | Guaranteed delivery, ordered | No guarantee, may drop packets |
+| Speed | Slower (overhead) | Faster (no overhead) |
+| Use cases | HTTP/HTTPS, SSH, DB connections, Terraform remote state | DNS queries, video streaming, VoIP, game state sync, Prometheus metrics (some) |
+
+In DevOps: SSH to VMs uses TCP port 22. Prometheus scrape uses TCP 9090. DNS lookups use **UDP 53** (with TCP fallback for large responses).
+
 ---
 
 ## Intermediate
 
-### Q8: What is `systemd` and how do you manage services with it?
+### Q9: What is `systemd` and how do you manage services with it?
 **A:** `systemd` is the init system (PID 1) and service manager for most modern Linux distributions. It manages system startup and services. You use `systemctl` to interact with it:
 - `systemctl status nginx` (check status)
 - `systemctl start/stop/restart nginx` (manage state)
 - `systemctl enable nginx` (ensure it starts on boot).
 
-### Q9: What is the purpose of `set -euo pipefail` at the top of a bash script?
+### Q10: What is the purpose of `set -euo pipefail` at the top of a bash script?
 **A:** It enforces "strict mode" making automation scripts much safer:
 - `-e`: Exits immediately if any command fails.
 - `-u`: Exits immediately if an undefined variable is referenced.
 - `-o pipefail`: Ensures that if a single command in a pipeline fails (e.g., `cmd1 | cmd2`), the whole pipeline reports failure.
 
-### Q10: How do you check which process is listening on a specific network port?
+### Q11: How do you check which process is listening on a specific network port?
 **A:** The modern approach is to use `ss` (socket statistics):
 ```bash
 ss -tulnp | grep :443
@@ -79,63 +90,80 @@ sudo lsof -i :443
 ```
 Both will show the process ID (PID) and name bound to that port.
 
-### Q11: What is the difference between a hard link and a symbolic (soft) link?
+### Q12: What is the difference between a hard link and a symbolic (soft) link?
 **A:**
 - **Hard link:** Points directly to the same underlying physical data blocks (inode) as the original file. If the original is deleted, the data persists via the hard link. Cannot span filesystems.
 - **Symbolic link:** Points to the path of the original file, acting like a shortcut. If the original is deleted, the symlink breaks ("dangles"). Can span filesystems and link directories.
 
-### Q12: How do you schedule recurring background jobs without using cron?
+### Q13: How do you schedule recurring background jobs without using cron?
 **A:** You can use **systemd timers**. They are the modern replacement for cron, pairing a `.timer` unit file with a `.service` unit file. They offer better logging via `journalctl`, precise scheduling constraints (like running specific minutes after boot), and better handling of missed executions.
 
-### Q13: What is the difference between `kill`, `kill -9`, and `killall`?
+### Q14: What is the difference between `kill`, `kill -9`, and `killall`?
 **A:**
 - `kill <PID>`: Sends `SIGTERM` (15), politely asking the process to terminate and clean up.
 - `kill -9 <PID>`: Sends `SIGKILL` (9), which the kernel executes immediately without letting the process clean up. Use only if a process is frozen.
 - `killall <name>`: Sends a signal to all running instances of a given process name.
 
-### Q14: How do you check current memory usage on a Linux system?
+### Q15: How do you check current memory usage on a Linux system?
 **A:** You use the `free -h` command to see total, used, and available RAM in a human-readable format. For real-time process-level memory monitoring, use `top` or `htop`.
 
-### Q15: What is the difference between standard output (stdout) and standard error (stderr)?
+### Q16: What is the difference between standard output (stdout) and standard error (stderr)?
 **A:** 
 - **stdout** (file descriptor 1) is used for normal output messages from a command.
 - **stderr** (file descriptor 2) is used specifically for error messages. 
 You can redirect them separately: `command > output.txt 2> error.txt`.
 
+### Q17: How does DNS resolution work internally?
+**A:**
+1. Browser checks its **local cache**.
+2. OS checks `/etc/hosts` file.
+3. OS queries the **local DNS resolver** (configured in `/etc/resolv.conf`, usually the gateway or Azure DNS `168.63.129.16`).
+4. If not cached, the resolver performs **recursive resolution**:
+   - Queries a **Root DNS server** → gets NS for `.com`
+   - Queries the **TLD server** (`.com`) → gets NS for `example.com`
+   - Queries the **Authoritative DNS server** for `example.com` → gets the A record (IP)
+5. The resolver caches the result per TTL and returns it to the client.
+
+### Q18: Explain Load Balancer, Reverse Proxy, and Ingress with real examples.
+**A:**
+- **Load Balancer**: Distributes incoming traffic across multiple backend servers. Example: **Azure Load Balancer** distributing requests across 3 VMs running the same web app. Operates at L4.
+- **Reverse Proxy**: Sits in front of backend servers and handles requests on their behalf. It can terminate SSL, cache responses, and provide WAF. Example: **NGINX** or **Azure Application Gateway**.
+- **Ingress (K8s)**: A Kubernetes-native API object that defines HTTP/HTTPS routing rules. An **Ingress Controller** (like NGINX Ingress) watches Ingress objects and configures the proxy accordingly. Example: Route `/api` to backend service, `/app` to frontend service — all entering via port 443 on one external IP.
+
 ---
 
 ## Advanced
 
-### Q16: How would you debug a failing bash script?
+### Q19: How would you debug a failing bash script?
 **A:** I would run the script with the `bash -x script.sh` flag. This enables execution tracing, printing every command to the terminal (preceded by a `+`) exactly as it is evaluated, after variable expansion. This makes it trivial to see exactly where and why a script fails.
 
-### Q17: What are Linux namespaces and cgroups?
+### Q20: What are Linux namespaces and cgroups?
 **A:** These are the foundational kernel technologies powering containers (like Docker). 
 - **Namespaces** provide process isolation by giving a process its own independent view of the filesystem, network, and process IDs. 
 - **Cgroups (Control Groups)** provide resource limitation, ensuring a process can only consume a specified amount of CPU, memory, or disk I/O.
 
-### Q18: Explain logical volume management (LVM).
+### Q21: Explain logical volume management (LVM).
 **A:** LVM abstracts physical storage devices into dynamic logical volumes. It allows you to group multiple physical disks into a Volume Group (VG), and then carve out flexible Logical Volumes (LVs). This allows sysadmins to resize partitions online, span file systems across multiple disks, and take storage snapshots without downtime.
 
-### Q19: What is the difference between `awk` and `sed`?
+### Q22: What is the difference between `awk` and `sed`?
 **A:**
 - **`sed` (Stream Editor):** Best for line-by-line text substitutions and transformations (e.g., `sed 's/old/new/g' file.txt`).
 - **`awk`:** A full data extraction and reporting language. It is best used for processing column-based tabular data. For example, `awk '{print $2}'` extracts the second column from a text stream.
 
-### Q20: How do you configure a persistent static IP on modern Ubuntu?
+### Q23: How do you configure a persistent static IP on modern Ubuntu?
 **A:** Modern Ubuntu uses **Netplan**. You define network configurations in a YAML file located at `/etc/netplan/`. After defining the static IP, gateway, and nameservers in the YAML file, you apply the configuration by running `sudo netplan apply`.
 
-### Q21: What is swappiness in Linux kernel?
+### Q24: What is swappiness in Linux kernel?
 **A:** Swappiness is a kernel parameter (0 to 100) that controls how aggressively the kernel swaps memory pages out to the disk's swap space. A lower value (like 10) tells the kernel to prefer keeping data in RAM as much as possible, which is usually preferred for database servers to maintain performance.
 
-### Q22: What is the purpose of SELinux or AppArmor?
+### Q25: What is the purpose of SELinux or AppArmor?
 **A:** They provide Mandatory Access Control (MAC) mechanisms to enhance system security. Unlike standard file permissions, they confine programs to a limited set of resources, mitigating the impact of vulnerabilities. If a web server is compromised, SELinux policies prevent the attacker from accessing files outside the web root, even if the service runs as root.
 
 ---
 
 ## Scenario-Based
 
-### Q23: Scenario: A web application running on port 80 is unreachable from the browser. How do you troubleshoot?
+### Q26: Scenario: A web application running on port 80 is unreachable from the browser. How do you troubleshoot?
 **A:** 
 1. `ss -tulnp | grep :80` to verify the web server process is running and bound to port 80.
 2. `systemctl status nginx` to check if the service crashed.
@@ -143,15 +171,15 @@ You can redirect them separately: `command > output.txt 2> error.txt`.
 4. Check the firewall rules (`iptables -L` or `ufw status`) to ensure port 80 traffic is allowed ingress.
 5. Check application logs (`tail /var/log/nginx/error.log`).
 
-### Q24: Scenario: The server reports `No space left on device`, but `df -h` shows the disk is only 50% full. What is happening?
+### Q27: Scenario: The server reports `No space left on device`, but `df -h` shows the disk is only 50% full. What is happening?
 **A:** 
 The server has likely run out of inodes. Every file and directory consumes an inode. If the system creates millions of tiny files (like session files or cache), it consumes all inodes before filling the disk capacity. Use `df -i` to verify inode exhaustion.
 
-### Q25: Scenario: You delete a massive 50GB log file, but `df -h` shows the disk space hasn't been freed. Why?
+### Q28: Scenario: You delete a massive 50GB log file, but `df -h` shows the disk space hasn't been freed. Why?
 **A:** 
 The file is likely still held open by a running process (like the application writing the logs). In Linux, space isn't freed until the file is deleted *and* all file handles pointing to it are closed. I would use `lsof | grep deleted` to find the process holding it, and then restart or reload that service to release the file descriptor.
 
-### Q26: Scenario: How would you write a bash script to parse a file of hostnames and check if port 22 is open on each?
+### Q29: Scenario: How would you write a bash script to parse a file of hostnames and check if port 22 is open on each?
 **A:**
 ```bash
 #!/bin/bash
@@ -166,30 +194,15 @@ done < servers.txt
 ```
 This uses bash's built-in pseudo-device `/dev/tcp` for efficient port checking without requiring external tools like `nc` or `nmap`.
 
-### Q27: Scenario: Server CPU load is incredibly high. How do you trace the culprit?
+### Q30: Scenario: Server CPU load is incredibly high. How do you trace the culprit?
 **A:** 
 First, I run `top` or `htop` and sort by CPU usage to identify the specific Process ID (PID) consuming resources. If it's an application I manage, I can use `strace -p <PID>` to see what system calls it's stuck on, or inspect its logs. If it's a generic process acting strangely, I'd check `dmesg` or `/var/log/syslog` for hardware or kernel-level errors causing high I/O wait.
 
-### Q28: Scenario: You lose the root password and need to gain access to a physical Linux server.
+### Q31: Scenario: You lose the root password and need to gain access to a physical Linux server.
 **A:** 
 I would reboot the server and interrupt the GRUB boot menu. I would edit the boot parameters by appending `init=/bin/bash` or `rd.break` to the kernel line. This boots the system into a single-user shell without requiring a password. I would then mount the root filesystem with write access (`mount -o remount,rw /`), run the `passwd` command to set a new root password, and reboot.
 
----
-
-## From Recent Interviews (July 2026)
-
-### Q29: How does DNS resolution work internally?
-**A:**
-1. Browser checks its **local cache**.
-2. OS checks `/etc/hosts` file.
-3. OS queries the **local DNS resolver** (configured in `/etc/resolv.conf`, usually the gateway or Azure DNS `168.63.129.16`).
-4. If not cached, the resolver performs **recursive resolution**:
-   - Queries a **Root DNS server** → gets NS for `.com`
-   - Queries the **TLD server** (`.com`) → gets NS for `example.com`
-   - Queries the **Authoritative DNS server** for `example.com` → gets the A record (IP)
-5. The resolver caches the result per TTL and returns it to the client.
-
-### Q30: What is a Cron Job? How do you troubleshoot if it hasn't run for 3 days?
+### Q32: What is a Cron Job? How do you troubleshoot if it hasn't run for 3 days?
 **A:** A cron job is a scheduled Linux task defined in a crontab file (`crontab -e`). It runs automatically at specified times.
 
 Troubleshooting steps:
@@ -215,7 +228,7 @@ sudo -u www-data /path/to/script.sh
 # Add PATH explicitly in the script or crontab
 ```
 
-### Q31: How would you debug high CPU, high memory, or high disk utilization on a Linux server?
+### Q33: How would you debug high CPU, high memory, or high disk utilization on a Linux server?
 **A:**
 **High CPU:**
 ```bash
@@ -238,20 +251,3 @@ du -sh /var/log/*            # Find which directory is growing
 lsof | grep deleted          # Find deleted-but-open files still consuming space
 df -i                        # Check inode exhaustion
 ```
-
-### Q32: What is the difference between TCP and UDP, and where have you used each?
-**A:**
-| | TCP | UDP |
-|-|-----|-----|
-| Connection | Connection-oriented (3-way handshake) | Connectionless |
-| Reliability | Guaranteed delivery, ordered | No guarantee, may drop packets |
-| Speed | Slower (overhead) | Faster (no overhead) |
-| Use cases | HTTP/HTTPS, SSH, DB connections, Terraform remote state | DNS queries, video streaming, VoIP, game state sync, Prometheus metrics (some) |
-
-In DevOps: SSH to VMs uses TCP port 22. Prometheus scrape uses TCP 9090. DNS lookups use **UDP 53** (with TCP fallback for large responses).
-
-### Q33: Explain Load Balancer, Reverse Proxy, and Ingress with real examples.
-**A:**
-- **Load Balancer**: Distributes incoming traffic across multiple backend servers. Example: **Azure Load Balancer** distributing requests across 3 VMs running the same web app. Operates at L4.
-- **Reverse Proxy**: Sits in front of backend servers and handles requests on their behalf. It can terminate SSL, cache responses, and provide WAF. Example: **NGINX** or **Azure Application Gateway**.
-- **Ingress (K8s)**: A Kubernetes-native API object that defines HTTP/HTTPS routing rules. An **Ingress Controller** (like NGINX Ingress) watches Ingress objects and configures the proxy accordingly. Example: Route `/api` to backend service, `/app` to frontend service — all entering via port 443 on one external IP.

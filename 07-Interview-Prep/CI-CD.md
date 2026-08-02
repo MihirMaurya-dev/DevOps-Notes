@@ -42,111 +42,221 @@ CD (Deployment): Deploy to Staging → Auto-test → Deploy to Prod
 ### Q8: What is a self-hosted runner vs a cloud-hosted runner?
 **A:** A cloud-hosted runner is a virtual machine provided and managed by the CI/CD platform (like GitHub-hosted runners or Microsoft-hosted agents). They are convenient but have fixed software and limited network access. A self-hosted runner is a machine you manage and register with the CI/CD platform. Self-hosted runners are used when you need specific hardware, custom pre-installed software, or access to internal private networks that cloud runners cannot reach.
 
+### Q9: What is the difference between `git commit` and `git push`?
+**A:**
+- `git commit`: Saves a snapshot of staged changes to your **local** repository history. No network involved.
+- `git push`: Uploads your local commits to the **remote** repository (e.g., Azure Repos, GitHub).
+
+Workflow: `git add` → `git commit` (local save) → `git push` (share with team).
+
+### Q10: What is the difference between `git fetch` and `git pull`?
+**A:**
+- `git fetch`: Downloads remote changes (new commits, branches) to your local remote-tracking refs (e.g., `origin/main`) **without** merging them into your working branch. Safe — lets you review changes first.
+- `git pull`: `fetch` + `merge` (or `rebase`) in one command. It immediately integrates remote changes into your current branch.
+
+### Q11: Explain the difference between Azure DevOps, GitHub Actions & GitLab CI.
+**A:**
+- **Azure DevOps**: Enterprise pipelines, boards, repos, artifacts
+- **GitHub Actions**: Lightweight, flexible CI/CD tightly integrated with GitHub
+- **GitLab CI**: Full DevOps suite with built-in container registry & auto DevOps
+Choice depends on corporate ecosystem and compliance needs.
+
+### Q12: Why Git?
+**A:** **Version Control**.
+
+### Q13: Git Flow or Trunk Based?
+**A:** Prefer **Trunk-Based** for faster delivery.
+
+### Q14: Why Pull Request?
+**A:** **Code Review** before merge.
+
+### Q15: Why Branch Protection?
+**A:** Prevent unauthorized changes.
+
+### Q16: Pipeline stages?
+**A:** **Validate → Scan → Plan → Approval → Apply**.
+
+### Q17: Why Manual Approval?
+**A:** Prevent accidental production deployment.
+
+### Q18: Why OIDC?
+**A:** **Passwordless authentication**.
+
+### Q19: Why GitHub Actions?
+**A:** **CI/CD Automation**.
+
+### Q20: Azure DevOps vs GitHub Actions?
+**A:** **Azure DevOps = Enterprise**, **GitHub Actions = Developer-friendly**.
+
 ---
 
 ## Intermediate
 
-### Q9: How do you manage environment-specific configuration in pipelines?
+### Q21: How do you manage environment-specific configuration in pipelines?
 **A:** The best practice is to separate code from configuration. You build the application once to create a generic artifact, then inject environment-specific variables during deployment. This can be done using variable groups in Azure DevOps, `.tfvars` files in Terraform, or Kustomize overlays in Kubernetes. Sensitive configurations should never be in plain text; instead, they should be pulled dynamically from a secret store like Azure Key Vault during pipeline execution.
 
-### Q10: What are the key differences between Azure DevOps Pipelines and GitHub Actions?
+### Q22: What are the key differences between Azure DevOps Pipelines and GitHub Actions?
 **A:** Azure DevOps Pipelines is deeply integrated with the Azure DevOps ecosystem (Boards, Repos, Test Plans) and uses `azure-pipelines.yml`, offering robust built-in approval gates and environment management. GitHub Actions is integrated natively into GitHub, triggered by GitHub events, and uses `.github/workflows/`. GitHub Actions relies heavily on its open-source Marketplace for action modules, whereas Azure DevOps has a structured Task marketplace. Both are highly capable and support advanced deployment strategies.
 
-### Q11: What is shift-left security in CI/CD?
+### Q23: What is shift-left security in CI/CD?
 **A:** "Shift-left" means moving security testing earlier in the software development lifecycle, rather than waiting until the end. This involves adding automated security checks directly into the CI pipeline and developer workflows. Examples include using pre-commit hooks to block secrets, running Static Application Security Testing (SAST) on pull requests, scanning container images for vulnerabilities, and validating IaC templates for misconfigurations before deployment.
 
-### Q12: How do you handle secrets securely in a pipeline?
+### Q24: How do you handle secrets securely in a pipeline?
 **A:** Secrets must never be hardcoded in the repository or printed in pipeline logs. They should be stored in a secure secret management service, such as Azure Key Vault or HashiCorp Vault. In the pipeline, you retrieve these secrets temporarily into masked environment variables. Additionally, you should use workload identity federation (OIDC) instead of static service principal secrets to authenticate the pipeline to cloud providers.
 
-### Q13: What is immutable infrastructure and how does CI/CD support it?
+### Q25: What is immutable infrastructure and how does CI/CD support it?
 **A:** Immutable infrastructure means that once a server or container is deployed, it is never modified in place. If a change is needed, a new image is built, deployed, and the old one is destroyed. CI/CD supports this by automating the creation of these new images (e.g., Packer for VMs, Docker for containers) and seamlessly orchestrating the replacement process, ensuring environments are completely predictable and free of "configuration drift."
 
-### Q14: Explain the difference between Blue/Green and Canary deployments.
+### Q26: Explain the difference between Blue/Green and Canary deployments.
 **A:** Blue/Green deployment involves maintaining two identical environments. The new version is deployed to the inactive environment (Green), tested, and then 100% of traffic is routed there instantly via a load balancer switch. Canary deployment involves routing a small percentage of user traffic (e.g., 5%) to the new version while monitoring metrics. If the new version is stable, the traffic percentage is gradually increased until it reaches 100%.
 
-### Q15: What is GitOps and how does ArgoCD implement it?
+### Q27: What is GitOps and how does ArgoCD implement it?
 **A:** GitOps is a model where a Git repository is the single source of truth for declarative infrastructure and applications. An automated agent continuously reconciles the cluster state to match Git. ArgoCD implements this in Kubernetes by running inside the cluster, polling a Git repo for changes, and applying the manifests (Helm/Kustomize/YAML) automatically. It provides "self-healing" by automatically reverting any manual changes made directly to the cluster.
 
-### Q16: How do you optimize a slow CI pipeline?
+### Q28: How do you optimize a slow CI pipeline?
 **A:** First, identify the bottleneck using pipeline execution metrics. Common optimizations include implementing dependency caching (e.g., caching `node_modules` or `.m2` directories) to avoid downloading libraries repeatedly. You can also run independent jobs, such as unit tests and linting, in parallel. For slow builds, consider using incremental builds or breaking a monolith down into smaller, independently deployable microservices.
 
-### Q17: What are DORA metrics and why do they matter?
+### Q29: What are DORA metrics and why do they matter?
 **A:** DORA metrics are four key indicators of software delivery performance: Deployment Frequency, Lead Time for Changes, Change Failure Rate, and Mean Time to Restore (MTTR). They matter because research shows they directly correlate with high-performing organizations. They provide objective goals to balance speed (deploying often and quickly) with stability (failing less and recovering fast), shifting focus away from vanity metrics like lines of code written.
 
----
-
-## Advanced
-
-### Q18: What are the phases of a robust Terraform pipeline?
-**A:** A robust Terraform pipeline has distinct Validate, Plan, and Apply stages. The Validate stage runs `terraform fmt`, `terraform validate`, linting (`tflint`), and security scans (`checkov`). The Plan stage runs `terraform plan` and outputs a binary plan artifact, which is saved. The Apply stage requires a manual approval gate and runs `terraform apply` exclusively against the saved plan artifact. This prevents time-of-check to time-of-use (TOCTOU) vulnerabilities.
-
-### Q19: How do you implement zero-downtime database migrations?
-**A:** Zero-downtime database migrations use the "Expand-Contract" pattern to avoid breaking the application. First, you expand the schema by adding new, nullable columns or tables, and deploy the new app version that writes to both old and new schemas. Second, you run a background task to migrate existing data. Finally, you deploy a newer app version that relies solely on the new schema, and then contract the database by dropping the old columns. Tools like Flyway or Liquibase handle the automation.
-
-### Q20: How do you handle pipeline dependency management and artifact caching?
-**A:** Effective dependency management involves caching downloaded packages to speed up builds. In Azure Pipelines or GitHub Actions, you use cache tasks with a key based on the hash of the dependency lock file (e.g., `package-lock.json`). If the file hasn't changed, the cache is restored. It is crucial to invalidate caches securely and ensure that caching does not mask issues with unstable transitive dependencies by strictly pinning versions.
-
-### Q21: Explain how Workload Identity Federation (OIDC) works in CI/CD pipelines.
-**A:** Workload Identity Federation allows pipelines to authenticate to **Azure** without storing long-lived client secrets or service principal passwords in the CI tool. The CI/CD system (e.g., GitHub Actions) acts as an Identity Provider and issues a short-lived JSON Web Token (JWT) using OpenID Connect (OIDC). Azure Entra ID is configured to trust the CI platform's issuer and grants a temporary Azure access token in exchange for the JWT — completely eliminating the need to store or rotate static credentials.
-
-### Q22: How do you test Infrastructure as Code (IaC) before applying it?
-**A:** IaC should be tested using a combination of static and dynamic tools. Static analysis includes syntax validation, linting (e.g., `tflint`), and security checks (e.g., `tfsec` or `checkov`) in the CI stage. Policy as Code (e.g., Open Policy Agent/Conftest) ensures compliance with organizational rules. Dynamic testing involves deploying the IaC to an ephemeral sandbox environment, running integration tests (e.g., using `Terratest`), and then tearing down the sandbox.
-
-### Q23: How do you ensure high availability and disaster recovery for your CI/CD toolchain?
-**A:** If using a SaaS platform (like GitHub Actions or Azure DevOps), the provider handles HA, but you must ensure self-hosted runners are deployed in Virtual Machine Scale Sets or Kubernetes clusters across multiple availability zones. Artifact registries and source code must be geo-replicated. For Disaster Recovery, implement regular backups of CI/CD configurations, ensure pipeline-as-code definitions are stored safely, and practice restoring the pipeline execution capability in a secondary region.
-
-### Q24: What is progressive delivery and how does it relate to feature flags?
-**A:** Progressive delivery is the practice of decoupling deployment from release. Code is deployed to production continuously but kept hidden behind feature flags. This allows teams to release the feature gradually to specific users, cohorts, or a small percentage of traffic. If issues are detected, the feature can be instantly toggled off via the flag without rolling back the deployment, providing fine-grained risk control.
-
-### Q25: How do you design a pipeline for a microservices architecture with independent deployments?
-**A:** Each microservice should have its own repository (or distinct folder in a monorepo) and its own independent CI/CD pipeline. Pipelines should be triggered only by path-specific changes to avoid unnecessary builds. The pipeline builds an independently versioned container image and deploys it using API contracts to ensure compatibility with other services. Shared infrastructure (like AKS or databases) is managed by a separate IaC pipeline.
-
----
-
-## Scenario-Based
-
-### Q26: Scenario: A production deployment just failed. What steps do you take to resolve it?
-**A:** First, I prioritize restoring service availability by immediately executing the rollback strategy, such as switching the Blue/Green load balancer back, reverting the feature flag, or redeploying the previous stable artifact. Once the system is stable, I gather logs and metrics from the failed deployment. Finally, I write a post-mortem to analyze the root cause, fix the defect, and add a test to the CI pipeline to ensure this specific failure is caught automatically in the future.
-
-### Q27: Scenario: Your team complains that the CI pipeline takes 45 minutes to run. How do you troubleshoot and fix this?
-**A:** I would start by analyzing the pipeline execution timeline to identify the slowest steps. If the build phase is slow, I'd implement dependency caching and multi-stage Docker builds. If tests are the bottleneck, I would run unit tests in parallel, split integration tests into separate jobs, and ensure tests mock external dependencies efficiently. I might also upgrade the runner hardware or shift heavy, non-critical integration tests to run asynchronously or nightly.
-
-### Q28: Scenario: You need to migrate from Jenkins to GitHub Actions. What is your strategy?
-**A:** I would not do a big-bang migration. I would start by auditing the Jenkins jobs to understand the dependencies and remove unused pipelines. I would map Jenkins plugins to equivalent GitHub Actions from the Marketplace. Then, I would migrate a single, low-risk microservice pipeline as a proof-of-concept. Once validated, I'd create reusable workflows to standardize the company's build processes and gradually migrate the remaining services while deprecating the Jenkins jobs one by one.
-
-### Q29: Scenario: A developer accidentally committed a secret to the repo. How do you handle the incident and prevent recurrence?
-**A:** First, I would immediately revoke the compromised secret at the source (e.g., rotate the database password or API key). Deleting the commit or removing the file is not enough because the secret is forever in Git history and potentially cloned. Then, I would configure a tool like BFG Repo-Cleaner or `git filter-repo` to scrub the secret from history. To prevent recurrence, I would enforce pre-commit hooks using `git-secrets` or `trufflehog` and implement automated secret scanning in the CI pipeline.
-
-### Q30: Scenario: Your Terraform apply fails halfway through. How do you recover state?
-**A:** I would check the specific error message to see which resource failed. Terraform state is updated for the resources it successfully created before the failure. I would fix the underlying issue in the code (e.g., correcting an invalid parameter or fixing permissions). Then, I would re-run `terraform plan` and `terraform apply`. Terraform is declarative; it will recognize what was already created and resume provisioning only the remaining infrastructure.
-
-### Q31: Scenario: The application requires complex integration testing with external services. How do you mock or handle this in CI?
-**A:** Relying on actual external services in CI causes brittle, slow, and flaky tests. I would use tools like WireMock to stub the external API responses or use Testcontainers to spin up lightweight, ephemeral Docker containers of databases, message queues, or mock servers during the CI run. This ensures the tests are fast, self-contained, and isolated from external network or state issues.
-
----
-
-## From Recent Interviews (July 2026)
-
-### Q32: What is a Service Connection in Azure DevOps? What is required to create one?
+### Q30: What is a Service Connection in Azure DevOps? What is required to create one?
 **A:** A Service Connection defines how Azure DevOps authenticates to an external service (Azure, AWS, SonarQube, GitHub, etc.). To create one for Azure, you need:
 - **Subscription ID and Name**
 - **Authentication method**: Modern approach is **Workload Identity Federation (OIDC)** — no secrets to manage. Legacy approach uses a Service Principal with a client secret.
 - A Service Principal or Managed Identity with appropriate RBAC on the target Azure subscription.
 OIDC is preferred because there are no rotating secrets; ADO exchanges a short-lived JWT with Azure Entra ID.
 
-### Q33: What is the difference between a Task Group and a Deployment Group in Azure DevOps?
+### Q31: What is the difference between a Task Group and a Deployment Group in Azure DevOps?
 **A:**
 - **Task Group**: A reusable collection of pipeline **steps/tasks** that can be referenced across multiple pipelines. Think of it as a pipeline "function." Changes to the task group propagate to all pipelines using it.
 - **Deployment Group**: A set of **target machines** (physical/VMs) registered with ADO, used for **classic release pipelines** to deploy to specific on-premises or cloud VMs. It's the deployment target — not the pipeline logic.
 
-### Q34: What are Gates in Azure DevOps?
+### Q32: What are Gates in Azure DevOps?
 **A:** Gates are automated pre/post-deployment checks in release pipelines that must pass before moving to the next stage. Common gate types:
 - **Query Work Items**: Block deployment if there are P0 bugs open.
 - **Invoke REST API**: Call an external health check endpoint and verify `200 OK`.
 - **Azure Monitor Alerts**: Block if there are active alerts.
 - **SonarQube Quality Gate**: Block if code coverage or bug count fails threshold.
 
-### Q35: How would you implement a CI/CD pipeline for deploying to a multi-region AKS cluster?
+### Q33: When would you use a Managed Identity instead of a Service Principal?
+**A:**
+| Scenario | Use |
+|---------|-----|
+| Azure resource (VM, App Service, AKS) accessing another Azure service | **Managed Identity** — no credential management |
+| CI/CD pipeline (GitHub Actions, ADO, Jenkins) accessing Azure | **Service Principal** with OIDC federation |
+| External application (non-Azure) accessing Azure | **Service Principal** with client secret/cert |
+Managed Identity is always preferred for Azure-to-Azure authentication as Azure handles credential rotation automatically.
+
+### Q34: How do you promote code from Dev → QA → Production in Azure DevOps?
+**A:** Use a multi-stage YAML pipeline with environment-based approvals:
+```yaml
+stages:
+  - stage: Dev
+    environment: dev
+    # Auto-deploy on every merge to main
+
+  - stage: QA
+    dependsOn: Dev
+    environment: qa        # Requires QA team approval gate
+    # Deploy same artifact from Dev
+
+  - stage: Production
+    dependsOn: QA
+    environment: production  # Requires manager approval + business hours gate
+    # Deploy exact same Docker image/Helm chart — never rebuild
+```
+The key principle: **build once, deploy many**. The same immutable artifact flows through all stages.
+
+### Q35: How do you implement rollback if a deployment fails?
+**A:**
+- **Kubernetes**: `kubectl rollout undo deployment/<name>` or `helm rollback <release> <revision>`.
+- **Blue-Green**: Switch the load balancer/Ingress rule back to the Blue (old) environment instantly.
+- **Canary**: Set traffic weight back to 0% for new version.
+- **CI/CD Pipeline**: Trigger a re-deploy of the previous pipeline run's artifact using ADO's `Re-deploy` button or a dedicated rollback stage that references the last known-good image tag stored in a variable group.
+
+---
+
+## Advanced
+
+### Q36: What are the phases of a robust Terraform pipeline?
+**A:** A robust Terraform pipeline has distinct Validate, Plan, and Apply stages. The Validate stage runs `terraform fmt`, `terraform validate`, linting (`tflint`), and security scans (`checkov`). The Plan stage runs `terraform plan` and outputs a binary plan artifact, which is saved. The Apply stage requires a manual approval gate and runs `terraform apply` exclusively against the saved plan artifact. This prevents time-of-check to time-of-use (TOCTOU) vulnerabilities.
+
+### Q37: How do you implement zero-downtime database migrations?
+**A:** Zero-downtime database migrations use the "Expand-Contract" pattern to avoid breaking the application. First, you expand the schema by adding new, nullable columns or tables, and deploy the new app version that writes to both old and new schemas. Second, you run a background task to migrate existing data. Finally, you deploy a newer app version that relies solely on the new schema, and then contract the database by dropping the old columns. Tools like Flyway or Liquibase handle the automation.
+
+### Q38: How do you handle pipeline dependency management and artifact caching?
+**A:** Effective dependency management involves caching downloaded packages to speed up builds. In Azure Pipelines or GitHub Actions, you use cache tasks with a key based on the hash of the dependency lock file (e.g., `package-lock.json`). If the file hasn't changed, the cache is restored. It is crucial to invalidate caches securely and ensure that caching does not mask issues with unstable transitive dependencies by strictly pinning versions.
+
+### Q39: Explain how Workload Identity Federation (OIDC) works in CI/CD pipelines.
+**A:** Workload Identity Federation allows pipelines to authenticate to **Azure** without storing long-lived client secrets or service principal passwords in the CI tool. The CI/CD system (e.g., GitHub Actions) acts as an Identity Provider and issues a short-lived JSON Web Token (JWT) using OpenID Connect (OIDC). Azure Entra ID is configured to trust the CI platform's issuer and grants a temporary Azure access token in exchange for the JWT — completely eliminating the need to store or rotate static credentials.
+
+### Q40: How do you test Infrastructure as Code (IaC) before applying it?
+**A:** IaC should be tested using a combination of static and dynamic tools. Static analysis includes syntax validation, linting (e.g., `tflint`), and security checks (e.g., `tfsec` or `checkov`) in the CI stage. Policy as Code (e.g., Open Policy Agent/Conftest) ensures compliance with organizational rules. Dynamic testing involves deploying the IaC to an ephemeral sandbox environment, running integration tests (e.g., using `Terratest`), and then tearing down the sandbox.
+
+### Q41: How do you ensure high availability and disaster recovery for your CI/CD toolchain?
+**A:** If using a SaaS platform (like GitHub Actions or Azure DevOps), the provider handles HA, but you must ensure self-hosted runners are deployed in Virtual Machine Scale Sets or Kubernetes clusters across multiple availability zones. Artifact registries and source code must be geo-replicated. For Disaster Recovery, implement regular backups of CI/CD configurations, ensure pipeline-as-code definitions are stored safely, and practice restoring the pipeline execution capability in a secondary region.
+
+### Q42: What is progressive delivery and how does it relate to feature flags?
+**A:** Progressive delivery is the practice of decoupling deployment from release. Code is deployed to production continuously but kept hidden behind feature flags. This allows teams to release the feature gradually to specific users, cohorts, or a small percentage of traffic. If issues are detected, the feature can be instantly toggled off via the flag without rolling back the deployment, providing fine-grained risk control.
+
+### Q43: How do you design a pipeline for a microservices architecture with independent deployments?
+**A:** Each microservice should have its own repository (or distinct folder in a monorepo) and its own independent CI/CD pipeline. Pipelines should be triggered only by path-specific changes to avoid unnecessary builds. The pipeline builds an independently versioned container image and deploys it using API contracts to ensure compatibility with other services. Shared infrastructure (like AKS or databases) is managed by a separate IaC pipeline.
+
+### Q44: How does a CI/CD pipeline authenticate with Azure using Workload Identity Federation?
+**A:**
+1. ADO/GitHub acts as an OIDC **Identity Provider**.
+2. Azure Entra ID is configured to **trust** that OIDC issuer.
+3. When the pipeline runs, it requests a **short-lived JWT token** from its OIDC endpoint.
+4. The pipeline presents this JWT to Azure Entra ID.
+5. Entra ID validates the token, checks the trust policy, and returns a **temporary Azure access token**.
+6. The pipeline uses this token to call Azure APIs — **no secrets stored anywhere**.
+
+### Q45: Explain your approach to designing CI/CD pipelines for a microservices application.
+**A:**
+- Multi-stage pipelines (Build → Test → Security Scan → Deploy)
+- Use GitLab/GitHub/Azure DevOps pipelines
+- Containerize microservices using Docker
+- Push images to ACR
+- Deploy to AKS with Helm or YAML
+- Implement approval gates, rollback strategy & monitoring hooks
+
+### Q46: Explain a branching strategy you recommend for enterprise-level DevOps.
+**A:**
+GitFlow or Trunk-based development:
+- Feature branches → PR → Develop → Release branch → Main
+- Protect main branch with approvals, scans, and automated tests
+- Use semantic versioning & release tags
+
+### Q47: How do you ensure zero-downtime deployments?
+**A:**
+- Use rolling deployments, blue-green deployments, or canary releases
+- Leverage Kubernetes deployment strategies
+- Pre-deployment readiness checks
+- Use feature flags and gradual traffic shifting
+
+---
+
+## Scenario-Based
+
+### Q48: Scenario: A production deployment just failed. What steps do you take to resolve it?
+**A:** First, I prioritize restoring service availability by immediately executing the rollback strategy, such as switching the Blue/Green load balancer back, reverting the feature flag, or redeploying the previous stable artifact. Once the system is stable, I gather logs and metrics from the failed deployment. Finally, I write a post-mortem to analyze the root cause, fix the defect, and add a test to the CI pipeline to ensure this specific failure is caught automatically in the future.
+
+### Q49: Scenario: Your team complains that the CI pipeline takes 45 minutes to run. How do you troubleshoot and fix this?
+**A:** I would start by analyzing the pipeline execution timeline to identify the slowest steps. If the build phase is slow, I'd implement dependency caching and multi-stage Docker builds. If tests are the bottleneck, I would run unit tests in parallel, split integration tests into separate jobs, and ensure tests mock external dependencies efficiently. I might also upgrade the runner hardware or shift heavy, non-critical integration tests to run asynchronously or nightly.
+
+### Q50: Scenario: You need to migrate from Jenkins to GitHub Actions. What is your strategy?
+**A:** I would not do a big-bang migration. I would start by auditing the Jenkins jobs to understand the dependencies and remove unused pipelines. I would map Jenkins plugins to equivalent GitHub Actions from the Marketplace. Then, I would migrate a single, low-risk microservice pipeline as a proof-of-concept. Once validated, I'd create reusable workflows to standardize the company's build processes and gradually migrate the remaining services while deprecating the Jenkins jobs one by one.
+
+### Q51: Scenario: A developer accidentally committed a secret to the repo. How do you handle the incident and prevent recurrence?
+**A:** First, I would immediately revoke the compromised secret at the source (e.g., rotate the database password or API key). Deleting the commit or removing the file is not enough because the secret is forever in Git history and potentially cloned. Then, I would configure a tool like BFG Repo-Cleaner or `git filter-repo` to scrub the secret from history. To prevent recurrence, I would enforce pre-commit hooks using `git-secrets` or `trufflehog` and implement automated secret scanning in the CI pipeline.
+
+### Q52: Scenario: Your Terraform apply fails halfway through. How do you recover state?
+**A:** I would check the specific error message to see which resource failed. Terraform state is updated for the resources it successfully created before the failure. I would fix the underlying issue in the code (e.g., correcting an invalid parameter or fixing permissions). Then, I would re-run `terraform plan` and `terraform apply`. Terraform is declarative; it will recognize what was already created and resume provisioning only the remaining infrastructure.
+
+### Q53: Scenario: The application requires complex integration testing with external services. How do you mock or handle this in CI?
+**A:** Relying on actual external services in CI causes brittle, slow, and flaky tests. I would use tools like WireMock to stub the external API responses or use Testcontainers to spin up lightweight, ephemeral Docker containers of databases, message queues, or mock servers during the CI run. This ensures the tests are fast, self-contained, and isolated from external network or state issues.
+
+### Q54: How would you implement a CI/CD pipeline for deploying to a multi-region AKS cluster?
 **A:**
 ```yaml
 # Pipeline stages for multi-region AKS deployment
@@ -167,60 +277,3 @@ stages:
       - task: KubernetesManifest@0   # Deploy to West US AKS
 ```
 Use environment approvals and gates between regions to enforce sequential, validated promotion.
-
-### Q36: When would you use a Managed Identity instead of a Service Principal?
-**A:**
-| Scenario | Use |
-|---------|-----|
-| Azure resource (VM, App Service, AKS) accessing another Azure service | **Managed Identity** — no credential management |
-| CI/CD pipeline (GitHub Actions, ADO, Jenkins) accessing Azure | **Service Principal** with OIDC federation |
-| External application (non-Azure) accessing Azure | **Service Principal** with client secret/cert |
-Managed Identity is always preferred for Azure-to-Azure authentication as Azure handles credential rotation automatically.
-
-### Q37: What is the difference between `git commit` and `git push`?
-**A:**
-- `git commit`: Saves a snapshot of staged changes to your **local** repository history. No network involved.
-- `git push`: Uploads your local commits to the **remote** repository (e.g., Azure Repos, GitHub).
-
-Workflow: `git add` → `git commit` (local save) → `git push` (share with team).
-
-### Q38: What is the difference between `git fetch` and `git pull`?
-**A:**
-- `git fetch`: Downloads remote changes (new commits, branches) to your local remote-tracking refs (e.g., `origin/main`) **without** merging them into your working branch. Safe — lets you review changes first.
-- `git pull`: `fetch` + `merge` (or `rebase`) in one command. It immediately integrates remote changes into your current branch.
-
-### Q39: How does a CI/CD pipeline authenticate with Azure using Workload Identity Federation?
-**A:**
-1. ADO/GitHub acts as an OIDC **Identity Provider**.
-2. Azure Entra ID is configured to **trust** that OIDC issuer.
-3. When the pipeline runs, it requests a **short-lived JWT token** from its OIDC endpoint.
-4. The pipeline presents this JWT to Azure Entra ID.
-5. Entra ID validates the token, checks the trust policy, and returns a **temporary Azure access token**.
-6. The pipeline uses this token to call Azure APIs — **no secrets stored anywhere**.
-
-### Q40: How do you promote code from Dev → QA → Production in Azure DevOps?
-**A:** Use a multi-stage YAML pipeline with environment-based approvals:
-```yaml
-stages:
-  - stage: Dev
-    environment: dev
-    # Auto-deploy on every merge to main
-
-  - stage: QA
-    dependsOn: Dev
-    environment: qa        # Requires QA team approval gate
-    # Deploy same artifact from Dev
-
-  - stage: Production
-    dependsOn: QA
-    environment: production  # Requires manager approval + business hours gate
-    # Deploy exact same Docker image/Helm chart — never rebuild
-```
-The key principle: **build once, deploy many**. The same immutable artifact flows through all stages.
-
-### Q41: How do you implement rollback if a deployment fails?
-**A:**
-- **Kubernetes**: `kubectl rollout undo deployment/<name>` or `helm rollback <release> <revision>`.
-- **Blue-Green**: Switch the load balancer/Ingress rule back to the Blue (old) environment instantly.
-- **Canary**: Set traffic weight back to 0% for new version.
-- **CI/CD Pipeline**: Trigger a re-deploy of the previous pipeline run's artifact using ADO's `Re-deploy` button or a dedicated rollback stage that references the last known-good image tag stored in a variable group.
