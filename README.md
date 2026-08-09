@@ -344,6 +344,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🌐 Introduction | [`13-Git/01-Introduction.md`](13-Git/01-Introduction.md) | Git vs GitHub/GitLab/Azure Repos/Bitbucket |
 | 📁 Repository Setup | [`13-Git/02-Repository-Setup.md`](13-Git/02-Repository-Setup.md) | Repo creation, .gitignore, branch protection, pre-commit hooks |
 | 🔄 Core Workflow | [`13-Git/03-Core-Workflow.md`](13-Git/03-Core-Workflow.md) | Commit, Push, Pull Request, Code Review, branching strategies |
+| 🖥️ Commands Reference | [`13-Git/04-Commands-Reference.md`](13-Git/04-Commands-Reference.md) | Every Git & GitHub CLI (`gh`) command — what it does, effects, before/after |
 
 ---
 
@@ -443,7 +444,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | Metric | Value |
 |--------|-------|
 | 📁 Total Sections | 15 |
-| 📄 Total Notes | 173+ |
+| 📄 Total Notes | 174+ |
 | 🏗️ Terraform Topics | 20 + 9 Resource Library |
 | ☁️ Azure Services Covered | 33 |
 | 🏢 Landing Zone Topics | 18 |
@@ -454,7 +455,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 📋 Architecture Decision Records | 4 |
 | 🤖 Agentic AI Topics | 10 |
 | 🔐 Security Scanning Tools | 7 |
-| 🌿 Git Topics | 3 |
+| 🌿 Git Topics | 4 |
 | 💰 Cost & Governance Topics | 5 |
 
 ---
