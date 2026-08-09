@@ -15,9 +15,9 @@ This document tracks the progress through the DevOps Insiders Batch 18 curriculu
 - [ ] Core Navigation & File Commands
 - [ ] Text Processing (Grep, Awk, Sed)
 - [ ] Users, Groups, and Permissions (chmod, chown)
-- [ ] Networking Basics (SSH, Keys, Ports)
+- [x] Networking Basics (SSH, Keys, Ports)
 - [ ] Network Troubleshooting (curl, ping, ss)
-- [ ] Package Management (apt)
+- [x] Package Management (apt)
 - [ ] Services and Daemons (systemd, journalctl)
 - [ ] Task Scheduling (cron)
 - [ ] Bash Scripting (Variables, Logic, Strict Mode)
@@ -29,12 +29,12 @@ This document tracks the progress through the DevOps Insiders Batch 18 curriculu
 - [x] Azure Hierarchy (Tenant -> Management Groups -> Subscriptions -> RG)
 - [x] Identity & Access Management (Microsoft Entra ID, RBAC)
 - [x] Managed Identities
-- [x] Compute (Virtual Machines, VMSS)
+- [ ] Compute (Virtual Machines, VMSS)
 - [x] Networking (VNet, Subnets, NSGs, Peering, Route Tables)
-- [x] Storage (Storage Accounts, Blob, Files)
+- [ ] Storage (Storage Accounts, Blob, Files)
 - [x] Security (Key Vault)
 - [x] Monitoring (Azure Monitor, Log Analytics)
-- [x] Container Orchestration (AKS Fundamentals)
+- [ ] Container Orchestration (AKS Fundamentals)
 
 ## Phase 3: Infrastructure as Code
 - [x] Imperative vs Declarative approaches
@@ -45,8 +45,8 @@ This document tracks the progress through the DevOps Insiders Batch 18 curriculu
 - [x] Variables, Locals, and Outputs
 - [x] Loops and Conditionals (`count`, `for_each`)
 - [x] Modules (Creation and Usage)
-- [x] Workspaces (Dev/Prod isolation)
-- [x] CI/CD Pipeline Integration
+- [ ] Workspaces (Dev/Prod isolation)
+- [ ] CI/CD Pipeline Integration
 
 ## Phase 4: Enterprise Architecture & Landing Zones
 - [x] Cloud Adoption Framework (CAF) Overview
@@ -55,23 +55,23 @@ This document tracks the progress through the DevOps Insiders Batch 18 curriculu
 - [x] Management Group Hierarchy Design
 - [x] Identity and Governance (Azure Policy)
 - [x] Networking Topologies (Hub & Spoke vs vWAN)
-- [x] Security and Monitoring baselines
-- [x] Architecture Patterns (Multi-Region, DR, Zero Trust)
-- [x] Real World Project Implementations
+- [ ] Security and Monitoring baselines
+- [ ] Architecture Patterns (Multi-Region, DR, Zero Trust)
+- [ ] Real World Project Implementations
 
 ## Phase 5: CI/CD & DevOps Practices
-- [x] Git Branching Strategies (Trunk-Based, GitFlow)
-- [x] GitOps Principles
-- [x] Azure DevOps Pipelines
-- [x] GitHub Actions
+- [ ] Git Branching Strategies (Trunk-Based, GitFlow)
+- [ ] GitOps Principles
+- [ ] Azure DevOps Pipelines
+- [ ] GitHub Actions
 - [x] Release Strategies (Blue/Green, Canary, Rolling)
-- [x] Secrets Management in Pipelines
-- [x] Automated Testing integration
-- [x] DORA Metrics & DevOps KPIs
+- [ ] Secrets Management in Pipelines
+- [ ] Automated Testing integration
+- [ ] DORA Metrics & DevOps KPIs
 
 ## Phase 6: Advanced Topics (Ongoing)
-- [x] Service Mesh Concepts (Istio, Linkerd, OSM)
-- [x] Enterprise Architecture Patterns (Shared Services, vWAN Global Transit)
+- [ ] Service Mesh Concepts (Istio, Linkerd, OSM)
+- [ ] Enterprise Architecture Patterns (Shared Services, vWAN Global Transit)
 - [ ] Kubernetes Security (OPA Gatekeeper, Pod Security Standards)
 - [ ] GitOps with ArgoCD (Hands-on)
 - [ ] Cost Management & FinOps in Azure

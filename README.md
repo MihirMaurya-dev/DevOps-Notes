@@ -25,7 +25,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 - ✅ **Microsoft CAF alignment** for Landing Zone and governance design
 - ✅ **Hands-on implementations** with annotated code and decision logs
 
-> **Vault Engine:** [Obsidian](https://obsidian.md) | **Program:** DevOps Insiders Batch 18 | **Last Updated:** July 2026
+> **Vault Engine:** [Obsidian](https://obsidian.md) | **Program:** DevOps Insiders Batch 18 | **Last Updated:** August 2026
 
 ---
 
@@ -79,6 +79,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🔁 Loops & Conditionals | [`01-Terraform/13-Loops-Conditionals.md`](01-Terraform/13-Loops-Conditionals.md) | count, for_each, dynamic |
 | ♻️ Lifecycle | [`01-Terraform/14-Lifecycle.md`](01-Terraform/14-Lifecycle.md) | create_before_destroy, ignore_changes |
 | ⭐ Best Practices | [`01-Terraform/15-Best-Practices.md`](01-Terraform/15-Best-Practices.md) | Naming, structure, security |
+| 🖥️ Commands Reference | [`01-Terraform/16-Commands-Reference.md`](01-Terraform/16-Commands-Reference.md) | Every CLI command — what it does, effects, before/after |
 | 📝 Cheat Sheet | [`01-Terraform/Cheat-Sheet.md`](01-Terraform/Cheat-Sheet.md) | Quick command reference |
 | ❓ Interview Questions | [`01-Terraform/Interview-Questions.md`](01-Terraform/Interview-Questions.md) | Top interview Q&A |
 
@@ -203,7 +204,8 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🔵 Azure DevOps | [`04-CI-CD/Azure-DevOps.md`](04-CI-CD/Azure-DevOps.md) | Pipelines, repos, boards |
 | 🐙 GitHub Actions | [`04-CI-CD/GitHub-Actions.md`](04-CI-CD/GitHub-Actions.md) | Workflows, OIDC, runners |
 | ☸️ AKS Deployment | [`04-CI-CD/AKS-Deployment.md`](04-CI-CD/AKS-Deployment.md) | Helm, manifests, rollouts |
-| 🏗️ Terraform Pipeline | [`04-CI-CD/Terraform-Pipeline.md`](04-CI-CD/Terraform-Pipeline.md) | Plan/Apply gates, OIDC |
+| 🏗️ Terraform Pipeline | [`04-CI-CD/Terraform-Pipeline.md`](04-CI-CD/Terraform-Pipeline.md) | Plan/Apply gates, OIDC (Azure DevOps) |
+| 🚀 GitHub Actions + Azure OIDC | [`04-CI-CD/GitHub-Actions-Terraform-OIDC.md`](04-CI-CD/GitHub-Actions-Terraform-OIDC.md) | Complete GitHub Actions Terraform CI/CD flow with OIDC — all 14 steps |
 | 🔁 GitOps Fundamentals | [`04-CI-CD/GitOps-Fundamentals.md`](04-CI-CD/GitOps-Fundamentals.md) | GitOps principles & tools |
 | 🚀 Release Strategy | [`04-CI-CD/Release-Strategy.md`](04-CI-CD/Release-Strategy.md) | Blue-Green, Canary, Ring |
 
@@ -440,11 +442,11 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | Metric | Value |
 |--------|-------|
 | 📁 Total Sections | 15 |
-| 📄 Total Notes | 170+ |
-| 🏗️ Terraform Topics | 19 + 9 Resource Library |
+| 📄 Total Notes | 172+ |
+| 🏗️ Terraform Topics | 20 + 9 Resource Library |
 | ☁️ Azure Services Covered | 33 |
 | 🏢 Landing Zone Topics | 18 |
-| 🔄 CI/CD Topics | 6 |
+| 🔄 CI/CD Topics | 7 |
 | 🐧 Linux Topics | 13 |
 | 🎯 Interview Prep Domains | 9 |
 | 🔨 Real-World Projects | 5 |
@@ -473,7 +475,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 <div align="center">
 
-**DevOps Insiders — Batch 18** &nbsp;|&nbsp; Built with ❤️ in Obsidian &nbsp;|&nbsp; Updated July 2026
+**DevOps Insiders — Batch 18** &nbsp;|&nbsp; Built with ❤️ in Obsidian &nbsp;|&nbsp; Updated August 2026
 
 *"The best time to build a knowledge system was when you started. The second best time is now."*
 
