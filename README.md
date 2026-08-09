@@ -203,6 +203,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 |-------|------|-------------|
 | 🔵 Azure DevOps | [`04-CI-CD/Azure-DevOps.md`](04-CI-CD/Azure-DevOps.md) | Pipelines, repos, boards |
 | 🐙 GitHub Actions | [`04-CI-CD/GitHub-Actions.md`](04-CI-CD/GitHub-Actions.md) | Workflows, OIDC, runners |
+| 🖥️ GitHub Actions Commands | [`04-CI-CD/GitHub-Actions-Commands-Reference.md`](04-CI-CD/GitHub-Actions-Commands-Reference.md) | Every YAML key, context, expression, and action used in pipelines |
 | ☸️ AKS Deployment | [`04-CI-CD/AKS-Deployment.md`](04-CI-CD/AKS-Deployment.md) | Helm, manifests, rollouts |
 | 🏗️ Terraform Pipeline | [`04-CI-CD/Terraform-Pipeline.md`](04-CI-CD/Terraform-Pipeline.md) | Plan/Apply gates, OIDC (Azure DevOps) |
 | 🚀 GitHub Actions + Azure OIDC | [`04-CI-CD/GitHub-Actions-Terraform-OIDC.md`](04-CI-CD/GitHub-Actions-Terraform-OIDC.md) | Complete GitHub Actions Terraform CI/CD flow with OIDC — all 14 steps |
@@ -442,11 +443,11 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | Metric | Value |
 |--------|-------|
 | 📁 Total Sections | 15 |
-| 📄 Total Notes | 172+ |
+| 📄 Total Notes | 173+ |
 | 🏗️ Terraform Topics | 20 + 9 Resource Library |
 | ☁️ Azure Services Covered | 33 |
 | 🏢 Landing Zone Topics | 18 |
-| 🔄 CI/CD Topics | 7 |
+| 🔄 CI/CD Topics | 8 |
 | 🐧 Linux Topics | 13 |
 | 🎯 Interview Prep Domains | 9 |
 | 🔨 Real-World Projects | 5 |
