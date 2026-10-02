@@ -1,0 +1,1 @@
+Q . How will you implement FinOps strategy in cloud environment.
