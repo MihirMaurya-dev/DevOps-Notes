@@ -9,7 +9,7 @@ level: beginner
 # Terraform Providers
 
 ## 📖 Before You Read
-- Understand the basic concept of Terraform from [[01-Introduction]].
+- Understand the basic concept of Terraform from [[02-Introduction|01-Introduction]].
 - Know what the `terraform init` command does from [[02-Installation]].
 
 ## 🤔 What is it?
@@ -76,7 +76,7 @@ A: You likely forgot to pin your provider version! The pipeline downloaded a bra
 
 ---
 **See Also:**
-* [[01-Introduction]]: How providers fit into the overall Terraform architecture.
+* [[02-Introduction|01-Introduction]]: How providers fit into the overall Terraform architecture.
 * [[04-Resources]]: Utilizing the provider to define actual infrastructure blocks.
 * [[09-Remote-Backend]]: How the provider authenticates with Azure Blob Storage.
-* [[GitHub-Actions]]: Caching the `.terraform` directory in pipelines to speed up deployments.
+* [[02-GitHub-Actions|GitHub-Actions]]: Caching the `.terraform` directory in pipelines to speed up deployments.

@@ -339,5 +339,5 @@ This breaks **GitOps** (the practice where Git is the single source of truth —
 ## 🔗 Links to Related Notes
 - [[09-Remote-Backend]]
 - [[10-Modules]]
-- [[CAF-Mapping]]
-- [[Terraform-Pipeline]]
+- [[01-CAF-Mapping|CAF-Mapping]]
+- [[05-Terraform-Pipeline|Terraform-Pipeline]]

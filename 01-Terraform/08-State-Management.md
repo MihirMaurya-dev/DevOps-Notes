@@ -9,7 +9,7 @@ level: beginner
 # Terraform State Management (CLI Operations)
 
 ## 📖 Before You Read
-- It's crucial to understand what the State File is conceptually. Please read [[State-Theory]] first!
+- It's crucial to understand what the State File is conceptually. Please read [[02-State-Theory|State-Theory]] first!
 
 ## 🤔 What is it?
 The State File (`terraform.tfstate`) is a massive, complex JSON file that acts as Terraform's memory. It maps your simple code to the real-world resources in Azure. 
@@ -75,7 +75,7 @@ A: You use the `terraform state mv` command. You tell Terraform to move the stat
 
 ---
 **See Also:**
-- [[State-Theory]]
+- [[02-State-Theory|State-Theory]]
 - [[09-Remote-Backend]]
 - [[04-Resources]]
 - [[15-Best-Practices]]

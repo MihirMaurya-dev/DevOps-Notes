@@ -22,7 +22,7 @@ This note covers **every Terraform CLI command** you will use — from the very 
 - ⚠️ Common mistakes
 
 **Prerequisites:**
-- You know what Terraform is → [[01-Introduction]]
+- You know what Terraform is → [[02-Introduction|01-Introduction]]
 - You know what a State File is → [[08-State-Management]]
 - You know what a Remote Backend is → [[09-Remote-Backend]]
 
@@ -802,10 +802,10 @@ git push origin feature/add-vnet
 
 ## 🔗 Related Notes
 
-- [[01-Introduction]] — What is Terraform?
+- [[02-Introduction|01-Introduction]] — What is Terraform?
 - [[08-State-Management]] — State file deep dive
 - [[09-Remote-Backend]] — Azure remote backend setup
 - [[11-Workspaces]] — Workspace commands in detail
 - [[Cheat-Sheet]] — Ultra-quick command reference card
-- [[Terraform-Pipeline]] — How these commands are used in a CI/CD pipeline (Azure DevOps)
-- [[GitHub-Actions-Terraform-OIDC]] — How these commands are used in GitHub Actions with Azure OIDC
+- [[05-Terraform-Pipeline|Terraform-Pipeline]] — How these commands are used in a CI/CD pipeline (Azure DevOps)
+- [[06-GitHub-Actions-Terraform-OIDC|GitHub-Actions-Terraform-OIDC]] — How these commands are used in GitHub Actions with Azure OIDC

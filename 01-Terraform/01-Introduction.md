@@ -75,6 +75,6 @@ A: Yes! The core Terraform tool is completely open-source and free to download a
 **See Also:**
 * [[02-Installation]]: Setting up the Terraform CLI.
 * [[03-Providers]]: Configuring the `azurerm` block.
-* [[Declarative-vs-Imperative]]: The paradigm behind HCL.
-* [[01-Terraform/Resource-Library/Resource-Group|Resource Group]]: Seeing HCL in action.
-* [[GitHub-Actions]]: Integrating the Terraform workflow into CI/CD.
+* [[01-Declarative-vs-Imperative|Declarative-vs-Imperative]]: The paradigm behind HCL.
+* [[06-Resource-Group|Resource Group]]: Seeing HCL in action.
+* [[02-GitHub-Actions|GitHub-Actions]]: Integrating the Terraform workflow into CI/CD.

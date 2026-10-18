@@ -81,6 +81,6 @@ A: You define the 3 common tags in a `locals` block. Inside the VM resource bloc
 ---
 **See Also:**
 - [[05-Variables]]
-- [[13-Loops-Conditionals]]
-- [[01-Terraform/Resource-Library/Resource-Group|Resource Group]]
-- [[CAF-Mapping]]
+- [[20-Loops-Conditionals|13-Loops-Conditionals]]
+- [[06-Resource-Group|Resource Group]]
+- [[01-CAF-Mapping|CAF-Mapping]]

@@ -80,5 +80,5 @@ A: If you are pulling a module from an external source (like Git or the Registry
 **See Also:**
 - [[05-Variables]]
 - [[07-Outputs]]
-- [[01-Terraform/Resource-Library/Resource-Group|Resource Group]]
-- [[CAF-Mapping]]
+- [[06-Resource-Group|Resource Group]]
+- [[01-CAF-Mapping|CAF-Mapping]]

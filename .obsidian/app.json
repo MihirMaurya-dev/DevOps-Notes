@@ -15,5 +15,6 @@
   "showIndentGuide": true,
   "useTab": true,
   "autoConvertHtml": true,
-  "foldIndent": true
+  "foldIndent": true,
+  "alwaysUpdateLinks": true
 }

@@ -165,6 +165,6 @@ A: Types tell Terraform what kind of data to expect. Common types are `string` (
 ---
 **See Also:**
 - [[06-Locals]]
-- [[01-Terraform/Resource-Library/Resource-Group|Resource Group]]
-- [[Terraform-Pipeline]]
+- [[06-Resource-Group|Resource Group]]
+- [[05-Terraform-Pipeline|Terraform-Pipeline]]
 - [[Key-Vault]]

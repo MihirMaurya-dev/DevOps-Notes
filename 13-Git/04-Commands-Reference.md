@@ -16,8 +16,8 @@ updated: 2026-08-09
 
 ## 📖 Before You Read
 
-- You know what Git and GitHub are → [[01-Introduction]]
-- You know the basic PR workflow → [[03-Core-Workflow]]
+- You know what Git and GitHub are → [[02-Introduction|01-Introduction]]
+- You know the basic PR workflow → [[05-Core-Workflow|03-Core-Workflow]]
 - This note is a **hands-on command reference** — not a concepts guide
 
 ---
@@ -1142,8 +1142,8 @@ git branch -d feature/add-vnet    # clean up local branch
 
 ## 🔗 Related Notes
 
-- [[01-Introduction]] — Git vs GitHub vs Azure Repos
+- [[02-Introduction|01-Introduction]] — Git vs GitHub vs Azure Repos
 - [[02-Repository-Setup]] — Repo creation, .gitignore, branch protection
-- [[03-Core-Workflow]] — PR workflow, code review checklist
-- [[GitHub-Actions-Commands-Reference]] — GitHub Actions pipeline syntax reference
-- [[GitHub-Actions-Terraform-OIDC]] — Full CI/CD flow using Git + GitHub Actions
+- [[05-Core-Workflow|03-Core-Workflow]] — PR workflow, code review checklist
+- [[03-GitHub-Actions-Commands-Reference|GitHub-Actions-Commands-Reference]] — GitHub Actions pipeline syntax reference
+- [[06-GitHub-Actions-Terraform-OIDC|GitHub-Actions-Terraform-OIDC]] — Full CI/CD flow using Git + GitHub Actions

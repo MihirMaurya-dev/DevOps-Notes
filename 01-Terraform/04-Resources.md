@@ -76,6 +76,6 @@ A: Yes! You don't need to copy and paste the block 50 times. You can use special
 ---
 **See Also:**
 - [[03-Providers]]
-- [[01-Terraform/Resource-Library/Resource-Group|Resource Group]]
-- [[13-Loops-Conditionals]]
+- [[06-Resource-Group|Resource Group]]
+- [[20-Loops-Conditionals|13-Loops-Conditionals]]
 - [[14-Lifecycle]]

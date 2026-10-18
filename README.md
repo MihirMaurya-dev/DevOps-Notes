@@ -25,7 +25,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 - ✅ **Microsoft CAF alignment** for Landing Zone and governance design
 - ✅ **Hands-on implementations** with annotated code and decision logs
 
-> **Vault Engine:** [Obsidian](https://obsidian.md) | **Program:** DevOps Insiders Batch 18 | **Last Updated:** August 2026
+> **Vault Engine:** [Obsidian](https://obsidian.md) | **Program:** DevOps Insiders Batch 18 | **Last Updated:** October 2026
 
 ---
 
@@ -40,7 +40,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🐧  | [05 — Linux](#-05--linux)                 | Linux mastery for DevOps         | Commands, Bash, Networking           |
 | 🏛️ | [06 — Architecture Patterns](#-06--architecture-patterns) | Enterprise design patterns       | Hub-Spoke, Zero-Trust, DR            |
 | 🎯  | [07 — Interview Prep](#-07--interview-prep)        | Curated Q&A by domain            | Scenario-based, Security             |
-| 🔨  | [08 — Real-World Projects](#-08--real-world-projects)   | Full project implementations     | AKS Platform, Secure Hub-Spoke       |
+| 🔨  | [08 — Real-World Projects](#-08--real-world-projects)   | Full project implementations     | AKS Platform, Axion 3-Tier Enterprise|
 | 📋  | [09 — Decision Logs](#-09--decision-logs)         | Architecture Decision Records    | ADRs with rationale                  |
 | 🗺️ | [10 — CAF Mapping](#-10--caf-mapping)           | Cloud Adoption Framework map     | Workloads ↔ CAF pillars              |
 | 📅  | [11 — Weekly Learning](#-11--weekly-learning)       | Progress tracker & goals         | Weekly reviews                       |
@@ -87,16 +87,16 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 ### Resource Library
 | Resource | File | Description |
 |----------|------|-------------|
-| 📋 README | [`01-Terraform/Resource-Library/README.md`](01-README.md) | Library index |
-| ☸️ AKS | [`01-Terraform/Resource-Library/AKS.md`](02-AKS.md) | AKS Terraform snippets |
-| 🔑 Key Vault | [`01-Terraform/Resource-Library/Key-Vault.md`](03-Key-Vault.md) | Key Vault resource blocks |
-| 📊 Log Analytics | [`01-Terraform/Resource-Library/Log-Analytics.md`](04-Log-Analytics.md) | Log Analytics workspace |
-| 🛡️ NSG | [`01-Terraform/Resource-Library/NSG.md`](05-NSG.md) | NSG + rules resource blocks |
-| 📁 Resource Group | [`01-Terraform/Resource-Library/Resource-Group.md`](06-Resource-Group.md) | Resource Group patterns |
-| 💾 Storage Account | [`01-Terraform/Resource-Library/Storage-Account.md`](07-Storage-Account.md) | Storage Account resource |
-| 🔀 Subnet | [`01-Terraform/Resource-Library/Subnet.md`](08-Subnet.md) | Subnet resource blocks |
-| 🖥️ VM | [`01-Terraform/Resource-Library/VM.md`](09-VM.md) | Linux/Windows VM resource |
-| 🌐 VNet | [`01-Terraform/Resource-Library/VNet.md`](10-VNet.md) | Virtual Network resource |
+| 📋 README | [`01-Terraform/Resource-Library/README.md`](01-Terraform/00-Resource-Library/01-README.md) | Library index |
+| ☸️ AKS | [`01-Terraform/Resource-Library/AKS.md`](01-Terraform/00-Resource-Library/02-AKS.md) | AKS Terraform snippets |
+| 🔑 Key Vault | [`01-Terraform/Resource-Library/Key-Vault.md`](01-Terraform/00-Resource-Library/03-Key-Vault.md) | Key Vault resource blocks |
+| 📊 Log Analytics | [`01-Terraform/Resource-Library/Log-Analytics.md`](01-Terraform/00-Resource-Library/04-Log-Analytics.md) | Log Analytics workspace |
+| 🛡️ NSG | [`01-Terraform/Resource-Library/NSG.md`](01-Terraform/00-Resource-Library/05-NSG.md) | NSG + rules resource blocks |
+| 📁 Resource Group | [`01-Terraform/Resource-Library/Resource-Group.md`](01-Terraform/00-Resource-Library/06-Resource-Group.md) | Resource Group patterns |
+| 💾 Storage Account | [`01-Terraform/Resource-Library/Storage-Account.md`](01-Terraform/00-Resource-Library/07-Storage-Account.md) | Storage Account resource |
+| 🔀 Subnet | [`01-Terraform/Resource-Library/Subnet.md`](01-Terraform/00-Resource-Library/08-Subnet.md) | Subnet resource blocks |
+| 🖥️ VM | [`01-Terraform/Resource-Library/VM.md`](01-Terraform/00-Resource-Library/09-VM.md) | Linux/Windows VM resource |
+| 🌐 VNet | [`01-Terraform/Resource-Library/VNet.md`](01-Terraform/00-Resource-Library/10-VNet.md) | Virtual Network resource |
 
 ---
 
@@ -210,6 +210,8 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🚀 GitHub Actions + Azure OIDC | [`04-CI-CD/GitHub-Actions-Terraform-OIDC.md`](04-CI-CD/06-GitHub-Actions-Terraform-OIDC.md) | Complete GitHub Actions Terraform CI/CD flow with OIDC — all 14 steps |
 | 🔁 GitOps Fundamentals | [`04-CI-CD/GitOps-Fundamentals.md`](04-CI-CD/07-GitOps-Fundamentals.md) | GitOps principles & tools |
 | 🚀 Release Strategy | [`04-CI-CD/Release-Strategy.md`](04-CI-CD/08-Release-Strategy.md) | Blue-Green, Canary, Ring |
+| ⚡ Pipeline Parallelism | [`04-CI-CD/Pipeline-Parallelism-and-Optimization.md`](04-CI-CD/09-Pipeline-Parallelism-and-Optimization.md) | Multi-agent concurrency, parallel linting & security scans |
+| 📦 Parameterized Templates | [`04-CI-CD/Parameterized-Pipelines-and-Templates.md`](04-CI-CD/10-Parameterized-Pipelines-and-Templates.md) | Reusable YAML templates & runtime environment parameters |
 
 ---
 
@@ -262,11 +264,12 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🏢 Landing Zone | [`07-Interview-Prep/Landing-Zone.md`](07-Interview-Prep/02-Landing-Zone.md) | LZ design questions |
 | 🐧 Linux | [`07-Interview-Prep/Linux.md`](07-Interview-Prep/03-Linux.md) | Linux admin Q&A |
 | 🌐 Networking | [`07-Interview-Prep/Networking.md`](07-Interview-Prep/04-Networking.md) | Azure networking deep-dives |
-| 🎭 Scenario-Based | [`07-Interview-Prep/Scenario-Based.md`](07-Interview-Prep/10-Scenario-Based.md) | "What would you do if..." |
+| 🎯 Interview Strategy & Intros | [`07-Interview-Prep/Interview-Strategy-and-Introductions.md`](07-Interview-Prep/05-Interview-Strategy-and-Introductions.md) | 5 tailored profile intros & comprehensive prep roadmap |
 | 🛡️ Security | [`07-Interview-Prep/Security.md`](07-Interview-Prep/06-Security.md) | Security posture Q&A |
 | 🏗️ Terraform | [`07-Interview-Prep/Terraform.md`](07-Interview-Prep/07-Terraform.md) | IaC interview scenarios |
 | 🔄 CI/CD | [`07-Interview-Prep/CI-CD.md`](07-Interview-Prep/08-CI-CD.md) | Pipeline & GitOps Q&A |
 | ☸️ Kubernetes & Docker | [`07-Interview-Prep/Kubernetes-Docker.md`](07-Interview-Prep/09-Kubernetes-Docker.md) | K8s & container Q&A |
+| 🎭 Scenario-Based | [`07-Interview-Prep/Scenario-Based.md`](07-Interview-Prep/10-Scenario-Based.md) | "What would you do if..." |
 
 ---
 
@@ -281,6 +284,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🏢 Landing Zone Deployment | [`08-Real-World-Projects/03-Landing-Zone-Deployment.md`](08-Real-World-Projects/03-Landing-Zone-Deployment.md) | Full ALZ via Terraform |
 | 🔒 Secure Hub-Spoke | [`08-Real-World-Projects/04-Secure-Hub-Spoke.md`](08-Real-World-Projects/04-Secure-Hub-Spoke.md) | Zero-Trust Hub-Spoke topology |
 | 🤖 Agentic AI Projects | [`08-Real-World-Projects/05-Agentic-AI-Industry-Projects.md`](08-Real-World-Projects/05-Agentic-AI-Industry-Projects.md) | ICU, Petroleum, Automotive (Interview Ready) |
+| 🚀 Axion 3-Tier Enterprise | [`08-Real-World-Projects/06-Axion-3-Tier-Enterprise-Project.md`](08-Real-World-Projects/06-Axion-3-Tier-Enterprise-Project.md) | React + Python + PostgreSQL Flexible Server PaaS + ADO YAML |
 
 ---
 

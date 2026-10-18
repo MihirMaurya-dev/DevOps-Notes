@@ -10,7 +10,7 @@ level: beginner
 
 ## 📖 Before You Read
 - It helps to have a basic understanding of what a "Command Line Interface" (CLI) is. This is the black terminal window where you type commands instead of clicking with a mouse.
-- Read [[01-Introduction]] first!
+- Read [[02-Introduction|01-Introduction]] first!
 
 ## 🤔 What is it?
 When you install standard software like Microsoft Word, you usually download a huge `.msi` or `.exe` installer, click "Next" five times, and it installs background services on your computer. 
@@ -67,7 +67,7 @@ A: No. It only runs when you explicitly type a command in the terminal, and it c
 
 ---
 **See Also:**
-* [[01-Introduction]]: The architectural context of the core binary.
+* [[02-Introduction|01-Introduction]]: The architectural context of the core binary.
 * [[03-Providers]]: How the installed binary downloads its necessary plugins.
-* [[GitHub-Actions]]: Setting the `terraform-version` parameter in a pipeline workflow.
-* [[Terraform-Pipeline]]: Ensuring runner environments match local installation parity.
+* [[02-GitHub-Actions|GitHub-Actions]]: Setting the `terraform-version` parameter in a pipeline workflow.
+* [[05-Terraform-Pipeline|Terraform-Pipeline]]: Ensuring runner environments match local installation parity.
