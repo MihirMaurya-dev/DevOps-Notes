@@ -1,16 +1,67 @@
 <div align="center">
 
-# 🚀 DevOps Knowledge Base
-### DevOps Insiders Batch 18
+# 🧠 DevOps & Cloud Architect Knowledge Vault
+### Production-Grade Runbooks, Architectural Decision Records (ADRs) & 400+ Interview Scenarios
 
-![Views](https://komarev.com/ghpvc/?username=MihirMaurya-dev-DevOps-Notes&label=Views&color=007EC6&style=flat)
-![Platform](https://img.shields.io/badge/Platform-Azure-0089D6?logo=microsoft-azure&logoColor=white)
-![IaC](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)
-![CI/CD](https://img.shields.io/badge/CI%2FCD-Azure_DevOps-0078D7?logo=azure-devops&logoColor=white)
-![Obsidian Vault](https://img.shields.io/badge/Obsidian-Vault-7c3aed?logo=obsidian&logoColor=white)
+[![Views](https://komarev.com/ghpvc/?username=MihirMaurya-dev-DevOps-Notes&label=Views&color=007EC6&style=flat-square)](https://github.com/MihirMaurya-dev/DevOps-Notes)
+[![Platform](https://img.shields.io/badge/Platform-Microsoft_Azure-0078D4?style=flat-square&logo=microsoftazure&logoColor=white)](https://azure.microsoft.com)
+[![IaC](https://img.shields.io/badge/IaC-Terraform-7B2CBF?style=flat-square&logo=terraform&logoColor=white)](https://terraform.io)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-Azure_DevOps_%26_GitHub_Actions-0078D7?style=flat-square&logo=azuredevops&logoColor=white)](https://dev.azure.com)
+[![Vault](https://img.shields.io/badge/Obsidian-174+_Evergreen_Notes-00FF66?style=flat-square&logo=obsidian&logoColor=0B0813)](https://obsidian.md)
+[![Agentic AI](https://img.shields.io/badge/AI-Model_Context_Protocol_%26_SRE-00E5FF?style=flat-square&logo=anthropic&logoColor=0B0813)](#-12--agentic-ai)
 
-> **A production-grade Obsidian vault for mastering Azure, Terraform, CI/CD, Linux, and Enterprise Architecture**  
-> Built for real-world DevOps engineering roles and Azure certification interviews.
+> **Curated by [Mihir Maurya](https://github.com/MihirMaurya-dev) · Enterprise Cloud Architect & DevSecOps**  
+> [![Portfolio](https://img.shields.io/badge/Portfolio-mihirmaurya--dev.github.io-7B2CBF?style=flat-square&logo=googlechrome&logoColor=white)](https://mihirmaurya-dev.github.io/)
+> [![Live Project](https://img.shields.io/badge/Live_Project-b18g119.online-00FF66?style=flat-square&logo=cloudflare&logoColor=0B0813)](https://b18g119.online)
+> [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/mihirmauryaa1)
+
+</div>
+
+---
+
+## 🛠️ Complete Engineering Tech Stack
+
+<div align="center">
+
+### ☁️ Cloud & Infrastructure
+![Microsoft Azure](https://img.shields.io/badge/Microsoft_Azure-0078D4?style=flat-square&logo=microsoftazure&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=flat-square&logo=terraform&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=flat-square&logo=ansible&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=flat-square&logo=cloudflare&logoColor=white)
+
+### 🔄 CI/CD & GitOps
+![Azure DevOps](https://img.shields.io/badge/Azure_DevOps-0078D7?style=flat-square&logo=azuredevops&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white)
+![ArgoCD](https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat-square&logo=argo&logoColor=white)
+
+### 🔐 Security & Governance
+![tfsec](https://img.shields.io/badge/tfsec-1a1a2e?style=flat-square&logo=security&logoColor=white)
+![Checkov](https://img.shields.io/badge/Checkov-4B275F?style=flat-square&logo=bridgecrew&logoColor=white)
+![Prisma Cloud](https://img.shields.io/badge/Prisma_Cloud-48B9C7?style=flat-square&logo=prisma&logoColor=white)
+![TFLint](https://img.shields.io/badge/TFLint-7B42BC?style=flat-square&logo=terraform&logoColor=white)
+![Gitleaks](https://img.shields.io/badge/Gitleaks-181717?style=flat-square&logo=github&logoColor=white)
+![Trivy](https://img.shields.io/badge/Trivy-1904DA?style=flat-square&logo=aqua&logoColor=white)
+
+### 🖥️ OS & Shell
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=flat-square&logo=ubuntu&logoColor=white)
+![Bash](https://img.shields.io/badge/Bash-4EAA25?style=flat-square&logo=gnu-bash&logoColor=white)
+![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?style=flat-square&logo=powershell&logoColor=white)
+
+### 📊 Monitoring & Observability
+![Azure Monitor](https://img.shields.io/badge/Azure_Monitor-0078D4?style=flat-square&logo=microsoftazure&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white)
+![OpenCost](https://img.shields.io/badge/OpenCost-00B4D8?style=flat-square&logo=kubernetes&logoColor=white)
+
+### 🤖 Agentic AI & LLMOps
+![Model Context Protocol](https://img.shields.io/badge/MCP-Standard-00E5FF?style=flat-square&logo=anthropic&logoColor=0B0813)
+![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat-square&logo=chainlink&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-7B2CBF?style=flat-square&logo=chainlink&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
 
 </div>
 
