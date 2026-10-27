@@ -69,14 +69,14 @@
 
 ## 🧭 About This Vault
 
-This vault is a structured, evergreen knowledge base developed as part of the **DevOps Insiders Batch 18** learning program. It covers the full DevOps engineering stack — from IaC fundamentals to enterprise-scale Azure Landing Zones — with a focus on:
+This vault is a structured, evergreen knowledge base developed and maintained by **Mihir Maurya**. It covers the full DevOps engineering stack — from IaC fundamentals to enterprise-scale Azure Landing Zones — with a focus on:
 
 - ✅ **Interview readiness** for Azure/DevOps engineer roles
 - ✅ **Production-grade patterns** drawn from real enterprise projects
 - ✅ **Microsoft CAF alignment** for Landing Zone and governance design
 - ✅ **Hands-on implementations** with annotated code and decision logs
 
-> **Vault Engine:** [Obsidian](https://obsidian.md) | **Program:** DevOps Insiders Batch 18 | **Last Updated:** October 2026
+> **Vault Engine:** [Obsidian](https://obsidian.md) | **Architect:** Mihir Maurya | **Last Updated:** October 2026
 
 ---
 
@@ -99,7 +99,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 | 🌿  | [13 — Git](#-13--git)                   | Git & platform workflows         | GitHub, Azure Repos, PR, Code Review |
 | 🔐  | [14 — Security Scanning](#-14--security-scanning)     | IaC & secrets security scanning  | TFLint, tfsec, Checkov, Gitleaks     |
 | 💰  | [15 — Cost & Governance](#-15--cost--governance)     | Cost management & governance     | Tagging, Naming, RBAC, OpenCost      |
-| ❓  | [16 — DI Interview Questions](#-16--di-interview-questions) | DevOps Insiders interview questions | Companies & topics                   |
+| ❓  | [16 — Enterprise Interview Questions](#-16--di-interview-questions) | Curated Enterprise Interview Questions | Companies & topics                   |
 
 ---
 
@@ -434,9 +434,9 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 ---
 
-## ❓ 16 — DI Interview Questions
+## ❓ 16 — Enterprise Interview Questions
 
-> A comprehensive collection of DevOps interview questions gathered from real company interviews and organized by topic, courtesy of DevOps Insiders.
+> A comprehensive collection of DevOps interview questions gathered from real company interviews and organized by topic, curated by Mihir Maurya from enterprise interview rounds.
 
 ### Collections
 | Topic | Path | Description |
@@ -546,7 +546,7 @@ This vault is a structured, evergreen knowledge base developed as part of the **
 
 <div align="center">
 
-**DevOps Insiders — Batch 18** &nbsp;|&nbsp; Built with ❤️ in Obsidian &nbsp;|&nbsp; Updated August 2026
+**Mihir Maurya — Cloud Solutions Architect & DevSecOps** &nbsp;|&nbsp; Built with ❤️ in Obsidian &nbsp;|&nbsp; Updated August 2026
 
 *"The best time to build a knowledge system was when you started. The second best time is now."*
 
